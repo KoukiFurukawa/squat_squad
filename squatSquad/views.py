@@ -38,7 +38,7 @@ def increment_shared_variable(amount=1):
 # Create your views here.
 def index(request):
     # print(increment_shared_variable(3))
-    return HttpResponse("テスト用")
+    return render(request, "squatSquad/index.html")
 
 
 def total(request):

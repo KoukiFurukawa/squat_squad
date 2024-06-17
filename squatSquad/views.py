@@ -86,9 +86,10 @@ def calculate_score_red(request):
         cache_key = "score_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
+            score = cache.get("cache_key, 0")
             squat = cache.get("count_squat_red", 0)
             cheer = cache.get("count_cheer_red", 0)
-            score += squat * (cheer / 100)
+            score += squat * (cheer // 100)
             cache.set(cache_key, score)
             return JsonResponse({cache_key:score})
 
@@ -97,8 +98,9 @@ def calculate_score_white(request):
         cache_key = "score_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
+            score = cache.get("cache_key, 0")
             squat = cache.get("count_squat_white", 0)
             cheer = cache.get("count_cheer_white", 0)
-            score += squat * (cheer / 100)
+            score += squat * (cheer // 100)
             cache.set(cache_key, score)
             return JsonResponse({cache_key:score})

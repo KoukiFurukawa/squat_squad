@@ -58,3 +58,25 @@ def isExercising(request):
         cache_key = "left_time"
         value = cache.get(cache_key, 0)
         return JsonResponse({"left_time":value})
+    
+def cheering_red(request):
+    if request.method == "GET":
+        amount = 1
+        cache_key = "count_cheer_red"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            value = cache.get(cache_key, 0)
+            value += amount
+            cache.set(cache_key, value)
+            return JsonResponse({cache_key:value})
+        
+def cheering_white(request):
+    if request.method == "GET":
+        amount = 1
+        cache_key = "count_cheer_white"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            value = cache.get(cache_key, 0)
+            value += amount
+            cache.set(cache_key, value)
+            return JsonResponse({cache_key:value})

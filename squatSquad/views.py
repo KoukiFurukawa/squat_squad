@@ -7,6 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request):
     return HttpResponse("テスト用")
 
+def total(request):
+    if request.method == "GET":
+        return render(request, "squatSquad/total.html")
+
 # sample --------------------------------------------------------------
 @csrf_exempt
 def reservation(request):

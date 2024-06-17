@@ -46,8 +46,15 @@ def total(request):
         return render(request, "squatSquad/total.html")
 
 
+
 # sample --------------------------------------------------------------
 @csrf_exempt
 def reservation(request):
     if request.method == "GET":
         return render(request, "frontend/index.html")
+    
+def isExercising(request):
+    if request.method == "GET":
+        cache_key = "left_time"
+        value = cache.get(cache_key, 0)
+        return JsonResponse({"left_time":value})

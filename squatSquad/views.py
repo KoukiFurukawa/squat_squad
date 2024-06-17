@@ -80,3 +80,25 @@ def cheering_white(request):
             value += amount
             cache.set(cache_key, value)
             return JsonResponse({cache_key:value})
+        
+def calculate_score_red(request):
+    if request.method == "GET":
+        cache_key = "score_red"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            squat = cache.get("count_squat_red", 0)
+            cheer = cache.get("count_cheer_red", 0)
+            score += squat * (cheer / 100)
+            cache.set(cache_key, score)
+            return JsonResponse({cache_key:score})
+
+def calculate_score_white(request):
+    if request.method == "GET":
+        cache_key = "score_white"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            squat = cache.get("count_squat_white", 0)
+            cheer = cache.get("count_cheer_white", 0)
+            score += squat * (cheer / 100)
+            cache.set(cache_key, score)
+            return JsonResponse({cache_key:score})

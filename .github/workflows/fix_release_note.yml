@@ -1,0 +1,67 @@
+name: Update Release Notes
+
+on:
+  workflow_run:
+    workflows: ["Create Release"]
+    types:
+      - completed
+
+jobs:
+  update-release-notes:
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # 最新と一個前のタグ名を取得 -------------------------------------------------------------------------------------
+      - name: Get the latest release tag
+        id: pre_tag
+        run: |
+          latest_releases=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].tag_name')
+
+          latest_tag=$(echo "$latest_releases" | sed -n '1p')
+          prev_tag=$(echo "$latest_releases" | sed -n '2p')
+
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          echo "prev_tag=$prev_tag" >> $GITHUB_OUTPUT
+
+      # タグ間の Commit を取得 ---------------------------------------------------------------------------------------
+      - name: Get commits since last release
+        id: get_commits
+        run: |
+          LATEST_TAG=${{ steps.pre_tag.outputs.latest_tag }}
+          PREV_TAG=${{ steps.pre_tag.outputs.prev_tag }}
+
+          git fetch --tags
+
+          git log --pretty=format:"- %s %h" ${PREV_TAG}..${LATEST_TAG} main > changelog.txt
+          changelog=$(cat changelog.txt)
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A'}"
+          changelog="${changelog//$'\r'/'%0D'}"
+
+          echo "commits=$changelog" >> $GITHUB_OUTPUT
+
+      # 取得した Commit を Note に反映 -------------------------------------------------------------------------------
+      - name: commit
+        id: re-write_note
+        run: |
+          changelog="${{ steps.get_commits.outputs.commits }}"
+          changelog="${changelog//'%0A'/\\n}"
+          changelog="${changelog//'%25'/%}"
+          changelog="${changelog//'%0D'/\\r}"
+          gh release view ${{ steps.pre_tag.outputs.latest_tag }} --json body -q .body > body.json
+          body=$(cat body.json)
+          new_body="## 変更履歴\n${changelog}"
+          printf "$new_body" > new_body.txt
+          gh release edit "${{ steps.pre_tag.outputs.latest_tag }}" -F new_body.txt
+
+      - name: Clean up
+        run: |
+          rm body.json new_body.txt changelog.txt

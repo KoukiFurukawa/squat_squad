@@ -8,12 +8,12 @@ import Squat from './components/SquatScreen/SquatScreen';
 
 function App() {
   return (
-  <BrowserRouter>
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/readqr' element={<Squat/>}></Route>
-    </Routes>
-  </BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/squat' element={<Squat />}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

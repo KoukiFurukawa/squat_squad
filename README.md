@@ -1,4 +1,11 @@
 ﻿# squat_squad
+
+## 開発者向け
+* ```squatSquad/```　にて ``` npm i ```
+* ```npm run dev```
+* ルート(readme.md とか requirements.txt がある階層) で ```python manage.py runserver```
+
+## 利用した記事
 * redis を使ってキャッシュに値を保存する
   * https://realpython.com/caching-in-django-with-redis/
 * redis 環境構築

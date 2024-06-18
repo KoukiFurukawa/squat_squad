@@ -138,6 +138,10 @@ def divide_teams(request):
             user_data = get_dict_from_redis("user")
             user_data[name] = { "score" : 0, "team" : team }
             set_dict_in_redis("user", user_data)
+            
+        return JsonResponse({ "team" : team })
+    else:
+        return HttpResponse("処理されていない例外です。")
         
 def set_dict_in_redis(key, dictionary):
     cache.set(key, json.dumps(dictionary))

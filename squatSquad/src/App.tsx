@@ -5,13 +5,15 @@ import './App.css';
 // components
 import Home from './components/Home/Home';
 import Squat from './components/SquatScreen/SquatScreen';
+import ReadQR from './components/ReadQR/ReadQR';
 
 function App() {
   return (
   <BrowserRouter>
     <Routes>
       <Route path='/' element={<Home />} />
-      <Route path='/readqr' element={<Squat/>}></Route>
+      <Route path='/readqr' element={<ReadQR />}></Route>
+      <Route path='/squat' element={<Squat />}></Route>
     </Routes>
   </BrowserRouter>
   );

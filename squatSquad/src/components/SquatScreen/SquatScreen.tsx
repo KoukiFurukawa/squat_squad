@@ -28,6 +28,8 @@ const Squat: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const angles = useRef<number[]>([]);
     const startTime = useRef<number | null>(null);
+    const squatCount = useRef<number>(0);
+    const isSquatting = useRef<boolean>(false);
 
     // 姿勢推定前の初期化＆初期設定
     useEffect(() => {
@@ -79,7 +81,7 @@ const Squat: React.FC = () => {
                         lineWidth: 2,
                     });
                     drawCustomLandmarks(canvasCtx, results.poseLandmarks);
-                    logLandmarkPositions(results.poseLandmarks);
+                    logLandmarkPositions(results.poseLandmarks, canvasCtx);
                 }
                 canvasCtx.restore();
             }
@@ -106,7 +108,7 @@ const Squat: React.FC = () => {
     }
 
     // 両肩、両腰、両膝の信頼度の平均を計算し、信頼度が高い方のランドマークの座標を取得しログに出力
-    function logLandmarkPositions(landmarks: NormalizedLandmarkList) {
+    function logLandmarkPositions(landmarks: NormalizedLandmarkList, ctx: CanvasRenderingContext2D) {
         if (!landmarks) return;
 
         function calculateAverageConfidence(indices: number[]) {
@@ -142,6 +144,7 @@ const Squat: React.FC = () => {
                 hip.x, hip.y, hip.z,
                 knee.x, knee.y, knee.z
             );
+            console.log(`Hip Angle: ${angle} degrees`);
 
             // 角度を配列に追加
             angles.current.push(angle);
@@ -156,11 +159,29 @@ const Squat: React.FC = () => {
                 const averageAngle = Math.round(angles.current.reduce((sum, angle) => sum + angle, 0) / angles.current.length);
                 console.log(`Average Hip Angle (last 0.5s): ${averageAngle} degrees`);
 
+                // スクワットの判定と回数カウント
+                if (averageAngle < 70 && !isSquatting.current) {
+                    isSquatting.current = true;
+                } else if (averageAngle > 160 && isSquatting.current) {
+                    isSquatting.current = false;
+                    squatCount.current += 1;
+                }
+
+                // 回数をキャンバスに描画
+                drawSquatCount(ctx, squatCount.current);
+
                 // 配列をクリアし、開始時間をリセット
                 angles.current = [];
                 startTime.current = currentTime;
             }
         }
+    }
+
+    // スクワット回数をキャンバスに描画
+    function drawSquatCount(ctx: CanvasRenderingContext2D, count: number) {
+        ctx.font = '48px sans-serif';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(`Squat Count: ${count}`, 10, 50);
     }
 
     return (

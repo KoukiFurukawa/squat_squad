@@ -8,6 +8,7 @@ from django.core.cache import cache # キャッシュ
 import redis
 from contextlib import contextmanager
 import os
+import json
 
 # Redisクライアントの設定
 redis_url = os.environ.get("REDIS_URL", default='redis://localhost:6379/')
@@ -110,3 +111,47 @@ def calculate_score_white(request):
             total_score += score
             cache.set(cache_key, total_score)
             return JsonResponse({cache_key:score})
+        
+
+# チーム判定 ---------------------------------------------------------------------
+def divide_teams(request):
+    if request.method == "GET":
+        return HttpResponse("only post")
+    
+    elif request.method == "POST":
+        req_body = json.loads(request.body.decode('utf-8'))
+        name = req_body["name"]
+        score = req_body["score"]
+        cache_key_red = "red_ability"
+        cache_key_white = "white_ability"
+        team = ""
+        
+        with redis_lock(cache_key_red + "_lock"):
+            red_ability = cache.get(cache_key_red)
+            white_ability = cache.get(cache_key_white)
+            if red_ability > white_ability:
+                red_ability += score
+                team = "red"
+            else:
+                white_ability += score
+                team = "white"
+            cache.set(cache_key_red, red_ability)
+            cache.set(cache_key_white,white_ability)
+            
+        with redis_lock("user_lock"):
+            user_data = get_dict_from_redis("user")
+            user_data[name] = { "score" : 0, "team" : team }
+            set_dict_in_redis("user", user_data)
+            
+        return JsonResponse({ "team" : team })
+    else:
+        return HttpResponse("処理されていない例外です。")
+        
+def set_dict_in_redis(key, dictionary):
+    cache.set(key, json.dumps(dictionary))
+
+def get_dict_from_redis(key):
+    value = cache.get(key)
+    if value is not None:
+        return json.loads(value)
+    return None

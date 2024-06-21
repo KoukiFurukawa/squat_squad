@@ -83,6 +83,7 @@ const Squat: React.FC = () => {
                     drawCustomLandmarks(canvasCtx, results.poseLandmarks);
                     logLandmarkPositions(results.poseLandmarks, canvasCtx);
                 }
+                drawSquatCount(canvasCtx, squatCount.current);
                 canvasCtx.restore();
             }
         }
@@ -144,7 +145,6 @@ const Squat: React.FC = () => {
                 hip.x, hip.y, hip.z,
                 knee.x, knee.y, knee.z
             );
-            console.log(`Hip Angle: ${angle} degrees`);
 
             // 角度を配列に追加
             angles.current.push(angle);
@@ -167,9 +167,6 @@ const Squat: React.FC = () => {
                     squatCount.current += 1;
                 }
 
-                // 回数をキャンバスに描画
-                drawSquatCount(ctx, squatCount.current);
-
                 // 配列をクリアし、開始時間をリセット
                 angles.current = [];
                 startTime.current = currentTime;
@@ -179,7 +176,7 @@ const Squat: React.FC = () => {
 
     // スクワット回数をキャンバスに描画
     function drawSquatCount(ctx: CanvasRenderingContext2D, count: number) {
-        ctx.font = '48px sans-serif';
+        ctx.font = '15px sans-serif';
         ctx.fillStyle = '#000000';
         ctx.fillText(`Squat Count: ${count}`, 10, 50);
     }

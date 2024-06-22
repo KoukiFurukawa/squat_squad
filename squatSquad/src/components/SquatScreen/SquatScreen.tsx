@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Pose, POSE_CONNECTIONS, Results, NormalizedLandmarkList } from '@mediapipe/pose';
 import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors } from '@mediapipe/drawing_utils';
 import Up from "./squat_image/Up.png";
 import Down from "./squat_image/Down.png";
+import Start from './squat_image/Start.png';
+import Finished from './squat_image/Finished.png';
 
 // 角度計算関数
 const calculateAngle = (
@@ -34,6 +36,25 @@ const Squat: React.FC = () => {
     const isSquatting = useRef<boolean>(false);
     const upImageRef = useRef<HTMLImageElement>(new Image());
     const downImageRef = useRef<HTMLImageElement>(new Image());
+
+    const [countdown, setCountdown] = useState<number>(5);
+    const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
+
+    // カウントダウンロジック
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev === 1) {
+                    setCountdownFinished(true);
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     // 姿勢推定前の初期化＆初期設定
     useEffect(() => {
@@ -66,7 +87,7 @@ const Squat: React.FC = () => {
             });
             camera.start();
         }
-    }, []);
+    }, [countdownFinished]);
 
     // MediapipeのPoseモジュールから結果を取得
     function onResults(results: Results) {
@@ -89,31 +110,33 @@ const Squat: React.FC = () => {
                     canvasRef.current.height
                 );
 
-                // 反転を解除してカウントを描画
-                canvasCtx.setTransform(1, 0, 0, 1, 0, 0);
-                drawSquatCount(canvasCtx, squatCount.current);
+                // カウントダウンが終わった後にスクワット回数およびUp/Downを表示
+                if (countdownFinished) {
+                    // 反転を解除してカウントを描画
+                    canvasCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    drawSquatCount(canvasCtx, squatCount.current);
 
-                // スクワット状態に応じた画像を表示
-                if (isSquatting.current === true) {
-                    canvasCtx.drawImage(upImageRef.current, 210, 75, 85, 78);
-                } else {
-                    canvasCtx.drawImage(downImageRef.current, 190, 100, 100, 50);
-                };
+                    // スクワット状態に応じた画像を表示
+                    if (isSquatting.current === true) {
+                        canvasCtx.drawImage(upImageRef.current, 200, 75, 85, 78);
+                    } else {
+                        canvasCtx.drawImage(downImageRef.current, 180, 100, 100, 50);
+                    }
 
-                // 再び水平反転を設定
-                canvasCtx.scale(-1, 1);
-                canvasCtx.translate(-canvasRef.current.width, 0);
+                    // 再び水平反転を設定
+                    canvasCtx.scale(-1, 1);
+                    canvasCtx.translate(-canvasRef.current.width, 0);
 
-                // ポーズのランドマークを描画
-                if (results.poseLandmarks) {
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-                        color: '#FFA500',
-                        lineWidth: 2,
-                    });
-                    drawCustomLandmarks(canvasCtx, results.poseLandmarks);
-                    logLandmarkPositions(results.poseLandmarks, canvasCtx);
+                    // ポーズのランドマークを描画
+                    if (results.poseLandmarks) {
+                        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+                            color: '#FFA500',
+                            lineWidth: 2,
+                        });
+                        drawCustomLandmarks(canvasCtx, results.poseLandmarks);
+                        logLandmarkPositions(results.poseLandmarks, canvasCtx);
+                    }
                 }
-
                 canvasCtx.restore();
             }
         }
@@ -208,14 +231,14 @@ const Squat: React.FC = () => {
     function drawSquatCount(ctx: CanvasRenderingContext2D, count: number) {
         ctx.font = '25px sans-serif';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`回数`, 25, 100);
+        ctx.fillText(`回数`, 35, 100);
 
         // 桁数に応じたx座標を設定
-        let xPosition = 35;
+        let xPosition = 42;
         if (count.toString().length === 2) {
-            xPosition = 20;
+            xPosition = 27;
         } else if (count.toString().length === 3) {
-            xPosition = 5;
+            xPosition = 15;
         }
 
         ctx.font = '50px sans-serif';
@@ -226,6 +249,11 @@ const Squat: React.FC = () => {
         <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
             <video ref={videoRef} style={{ display: 'none' }}></video>
             <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', height: '100%' }}></canvas>
+            {!countdownFinished && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '900px', color: '#FFFFFF' }}>
+                    {countdown}
+                </div>
+            )}
         </div>
     );
 };

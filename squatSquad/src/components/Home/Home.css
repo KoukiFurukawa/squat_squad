@@ -1,0 +1,59 @@
+:root {
+    background-color: white;
+    height: 100%;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1;
+    border: 1px #000;
+    border-radius: 20px;
+    width: 90%;
+    height: 85%;
+    margin: 5%;
+    display: flex;
+
+}
+
+.form {
+    margin: auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+
+.home{
+    position: fixed;
+    z-index: 1;
+    border: 1px #000;
+    border-radius: 20px;
+    width: 90%;
+    height: 85%;
+    margin: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.mydata{
+    width: 50%;
+    padding-bottom: 3%;
+}
+.teamdata{
+    width: 50%;
+    padding-bottom: 3%;
+}
+.buttons {
+    width: 50%;
+    padding-top: 2%;
+    display: flex;
+    gap: 8px;
+}

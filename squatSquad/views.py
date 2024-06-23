@@ -52,6 +52,12 @@ def squat(request):
    if request.method == "GET":
       return render(request, "squatSquad/index.html")
 
+# result --------------------------------------------------------------
+@csrf_exempt
+def result(request):
+   if request.method == "GET":
+      return render(request, "squatSquad/index.html")
+
 # sample --------------------------------------------------------------
 @csrf_exempt
 def reservation(request):

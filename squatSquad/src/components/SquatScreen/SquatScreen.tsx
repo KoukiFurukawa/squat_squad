@@ -40,7 +40,7 @@ const Squat: React.FC = () => {
     const [countdown, setCountdown] = useState<number>(5);
     const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
 
-    // カウントダウンロジック
+    // 計測開始前のカウントダウンロジック
     useEffect(() => {
         const timer = setInterval(() => {
             setCountdown((prev) => {
@@ -207,10 +207,10 @@ const Squat: React.FC = () => {
                 startTime.current = currentTime;
             }
 
-            // 0.5秒経過したら平均を計算して出力
-            if (currentTime - startTime.current >= 500) {
+            // 0.5秒経過したら平均を算出＆判定
+            if (currentTime - startTime.current >= 300) {
                 const averageAngle = Math.round(angles.current.reduce((sum, angle) => sum + angle, 0) / angles.current.length);
-                console.log(`Average Hip Angle (last 0.5s): ${averageAngle} degrees`);
+                console.log(`Average Hip Angle (last 0.3s): ${averageAngle} degrees`);
 
                 // スクワットの判定＆回数カウント
                 if (averageAngle < 100 && !isSquatting.current) {

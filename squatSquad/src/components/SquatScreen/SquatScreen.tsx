@@ -15,13 +15,14 @@ const Squat: React.FC = () => {
     const angles = useRef<number[]>([]);
     const startTime = useRef<number | null>(null);
     const isSquatting = useRef<boolean>(false);
-
     const [squatCount, setSquatCount] = useState<number>(0);
     const [isUp, setIsUp] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<number>(5);
     const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
     const [exerciseCountdown, setExerciseCountdown] = useState<number>(30);
     const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
+    const [showStartImage, setShowStartImage] = useState<boolean>(false);
+    const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);
 
     // 計測開始前のカウントダウンロジック
     useEffect(() => {
@@ -39,6 +40,18 @@ const Squat: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
 
+    // カウントダウン終了時のStart.pngの表示ロジック
+    useEffect(() => {
+        if (countdown === 0) {
+            setShowStartImage(true);
+            const startTimer = setTimeout(() => {
+                setShowStartImage(false);
+            }, 1000); // 1秒後にStart.pngを非表示にする
+
+            return () => clearTimeout(startTimer);
+        }
+    }, [countdown]);
+
     // スクワット計測開始後の30秒間のカウントダウンロジック
     useEffect(() => {
         if (countdownFinished) {
@@ -55,6 +68,18 @@ const Squat: React.FC = () => {
             return () => clearInterval(exerciseTimer);
         }
     }, [countdownFinished]);
+
+    // カウントダウン終了時の処理
+    useEffect(() => {
+        if (exerciseFinished) {
+            setShowFinishedImage(true);
+            const finishTimer = setTimeout(() => {
+                setShowFinishedImage(false);
+            }, 5000); // 5秒後にFinished.pngを非表示にする
+
+            return () => clearTimeout(finishTimer);
+        }
+    }, [exerciseFinished]);
 
     // 姿勢推定前の初期化＆初期設定
     useEffect(() => {
@@ -226,12 +251,17 @@ const Squat: React.FC = () => {
                     {countdown}
                 </div>
             )}
-            {countdownFinished && !exerciseFinished && (
+            {showStartImage && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    <img src={Start} alt="Start" style={{ width: '100%', height: 'auto' }} />
+                </div>
+            )}
+            {!showStartImage && countdownFinished && !exerciseFinished && (
                 <div style={{ position: 'absolute', top: '15%', left: '85%', transform: 'translate(-50%, -50%)', fontSize: '350px', color: '#FFFFFF' }}>
                     {`${exerciseCountdown}s`}
                 </div>
             )}
-            {countdownFinished && !exerciseFinished && (
+            {!showStartImage && countdownFinished && !exerciseFinished && (
                 <>
                     <div style={{ position: 'absolute', top: '53%', left: '8%', fontSize: '130px', color: '#FFFFFF' }}>
                         回数
@@ -241,11 +271,16 @@ const Squat: React.FC = () => {
                     </div>
                 </>
             )}
-            {countdownFinished && !exerciseFinished && (
+            {!showStartImage && countdownFinished && !exerciseFinished && (
                 <div style={{ position: 'absolute', top: isUp ? '55%' : '72%', left: isUp ? '70%' : '60%' }}>
                     {isUp ?
                         <img src={Up} alt="Up" style={{ width: '85%', height: 'auto' }} /> :
                         <img src={Down} alt="Down" style={{ width: '100%', height: 'auto' }} />}
+                </div>
+            )}
+            {showFinishedImage && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    <img src={Finished} alt="Finished" style={{ width: '100%', height: 'auto' }} />
                 </div>
             )}
         </div>

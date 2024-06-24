@@ -1,5 +1,8 @@
 ﻿# squat_squad
 
+## 実行
+* ```daphne squat_squad.asgi:application```
+
 ## 開発者向け
 * ```squatSquad/```　にて ``` npm i ```
 * ```npm run dev```

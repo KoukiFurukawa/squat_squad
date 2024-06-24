@@ -5,9 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { IUserInfo } from '../../interfaces/interfaces';
 
 const ReadQR = () => {
-    // const [cnt, setCnt] = useState<number>(0);
-    // const [message, setMessage] = useState<string>('');
-    // const [ws, setWs] = useState<any>(null);
+
     const [readValue, setReadValue] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
     const [team, setTeam] = useState<string>("");
@@ -18,8 +16,8 @@ const ReadQR = () => {
         onDecodeResult(result) {
             const text = result.getText();
             setReadValue(true);
-            setName(text)
-            setTeam(text)
+            setName(text.substring(0,text.length-1))
+            setTeam(text[text.length-1])
             console.log(text)
         },
     })
@@ -28,43 +26,6 @@ const ReadQR = () => {
         const data: IUserInfo = { name: name, team: team }
         navigate("/squat", { state: data })
     }
-
-    // useEffect(() => {
-    //     const loc = window.location;
-    //     const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
-    //     const wsUrl = wsStart + loc.host + '/ws/consumer';
-    //     const websocket = new WebSocket(wsUrl);
-
-    //     websocket.onopen = () => {
-    //         console.log('WebSocket is open now.');
-    //     };
-
-    //     websocket.onclose = () => {
-    //         console.log('WebSocket is closed now.');
-    //     };
-
-    //     websocket.onerror = (event) => {
-    //         console.error('WebSocket error:', event);
-    //     };
-
-    //     setWs(websocket);
-
-    //     return () => {
-    //         websocket.close();
-    //     };
-    // }, []);
-
-    // const sendMessage = () => {
-    //     if (ws) {
-    //         ws.send(JSON.stringify({
-    //             message: {
-    //                 "id" : "r_cnt",
-    //                 "cnt": cnt+1
-    //             }
-    //         }));
-    //         setCnt(cnt+1)
-    //     }
-    // };
 
 
     return (

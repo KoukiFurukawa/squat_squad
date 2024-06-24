@@ -10,6 +10,17 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
+                    test: /\.(png|jpe?g|gif)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[path][name].[ext]',
+                            },
+                        },
+                    ],
+                },
+                {
                     test: /\.tsx?$/,
                     use: 'ts-loader',
                     exclude: /node_modules/,

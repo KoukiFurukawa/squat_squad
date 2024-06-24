@@ -1,18 +1,20 @@
+// CounterButton.tsx
 import React, { useState } from 'react';
 import './CounterButton.css';
 
 const CounterButton: React.FC = () => {
     const [count, setCount] = useState(0);
 
-    const handleIncrement = () => {
+    const handleClick = () => {
         setCount(count + 1);
     };
 
     return (
-        <div>
-            <a href="#" className="cta_btn01" onClick={handleIncrement}>
-                {count}
+        <div className="container">
+            <a href="#" className="btn-square-shadow" onClick={handleClick}>
+                Push!
             </a>
+            <p>Count: {count}</p>
         </div>
     );
 };

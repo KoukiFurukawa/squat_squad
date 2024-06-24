@@ -1,46 +1,42 @@
-.cta_btn01 {
-  width: 100px;
-  /* ボタンの幅と高さを同じに */
-  height: 100px;
-  /* ボタンの幅と高さを同じに */
-  font-weight: bold;
-  /* 文字の太さ */
-  line-height: 100px;
-  /* ボタンの高さと同じにして中央揃え */
-  position: relative;
-  display: inline-block;
-  transition: all 0.3s;
+/* styles.css */
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
   text-align: center;
-  vertical-align: middle;
+}
+
+.btn-square-shadow {
+  display: inline-block;
+  width: 200px;
+  /* 幅を指定 */
+  height: 200px;
+  /* 高さを指定 */
+  line-height: 200px;
+  /* テキストを中央に配置 */
+  text-align: center;
   text-decoration: none;
-  letter-spacing: 0.1em;
-  color: #000;
-  /* 文字色 */
+  background: #668ad8;
+  /* ボタン色 */
+  color: #FFF;
+  border-bottom: solid 4px #627295;
   border-radius: 50%;
   /* 円形にする */
-  margin-bottom: 0.5rem;
-  padding: 0;
-  background: #F38173;
-  /* ボタンの背景色 */
-  box-shadow: 0 0.6rem 0 0 rgba(0, 0, 0, 0.2);
+  font-size: 1em;
 }
 
-.cta_btn01:before {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  bottom: -5px;
-  left: -5px;
-  content: "";
-  transition: all 0.3s;
-  border: 2px solid #000;
-  border-radius: 50%;
-  /* 円形にする */
-  background: transparent;
-  /* 背景色を透明に */
-}
-
-.cta_btn01:hover:before {
-  transform: translate3d(0, 0.5rem, -1rem);
-  box-shadow: 0 0.35rem 0 0 rgba(0, 0, 0, 0.2);
+.btn-square-shadow:active {
+  /* ボタンを押したとき */
+  -webkit-transform: translateY(4px);
+  transform: translateY(4px);
+  /* 下に動く */
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+  /* 影を小さく */
+  border-bottom: none;
 }

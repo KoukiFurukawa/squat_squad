@@ -46,7 +46,17 @@ def total(request):
     if request.method == "GET":
         return render(request, "squatSquad/total.html")
 
+# squat --------------------------------------------------------------
+@csrf_exempt
+def squat(request):
+   if request.method == "GET":
+      return render(request, "squatSquad/index.html")
 
+# result --------------------------------------------------------------
+@csrf_exempt
+def result(request):
+   if request.method == "GET":
+      return render(request, "squatSquad/index.html")
 
 # sample --------------------------------------------------------------
 @csrf_exempt
@@ -59,7 +69,7 @@ def isExercising(request):
         cache_key = "left_time"
         value = cache.get(cache_key, 0)
         return JsonResponse({"left_time":value})
-    
+
 def cheering_red(request):
     if request.method == "GET":
         amount = 1

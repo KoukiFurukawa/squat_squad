@@ -4,6 +4,7 @@
  ---------------------------------------------------------------------------- */
 
 import React, { useEffect, useState } from "react";
+import QRCode from "qrcode.react";
 import "./Home.css";
 
 const Home = () => 
@@ -11,6 +12,7 @@ const Home = () =>
     const [isLogin, setLogin] = useState<boolean>(false)
     const [name, setName] = useState("");
     const [exercise_pre, setExercise_pre] = useState("");
+    const [team,setTeam] = useState("白");
     const [alert_name,setAlert_name] = useState("");
     const [alert_exer,setAlert_exer] = useState("");
     const [viewQR, setViewQR] = useState<boolean>(false)
@@ -71,6 +73,12 @@ const Home = () =>
         }
     },[]);
 
+    const makeQRvalue = () => {
+        const value = JSON.stringify({name: name, team: team});
+        const encoder = new TextEncoder();
+        return encoder.encode(value);
+    }
+
     return(
         <>
             { isLogin ? 
@@ -101,12 +109,17 @@ const Home = () =>
                         <div>最大応援タップ数 : 100</div>
                     </div>
                     <div className="teamdata">
-                        <div>赤チーム</div>
+                        <div>{`${team}チーム`}</div>
                         <div>チーム総得点 : </div>
                     </div>
                     { viewQR ?
                         <div className="QRmodal">
-                            <img src="" alt="QR" />
+                            <div className="QRCode">
+                                <QRCode
+                                    size={256}
+                                    value={`${name}${team}`}
+                                />
+                            </div>
                             <button onClick={() => setViewQR(false)}>閉じる</button>
                         </div>
                     :<>

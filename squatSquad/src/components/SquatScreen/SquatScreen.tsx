@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { IUserInfo } from '../../interfaces/interfaces';
 import { Pose, POSE_CONNECTIONS, Results, NormalizedLandmarkList } from '@mediapipe/pose';
 import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors } from '@mediapipe/drawing_utils';
@@ -23,6 +25,10 @@ const Squat: React.FC = () => {
     const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
     const [showStartImage, setShowStartImage] = useState<boolean>(false);
     const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);
+    const [ws, setWs] = useState<any>(null);
+
+    const location = useLocation();
+    const [selectId, setSelectId] = useState<IUserInfo>(location.state)
 
     // 計測開始前のカウントダウンロジック
     useEffect(() => {
@@ -47,8 +53,12 @@ const Squat: React.FC = () => {
             const startTimer = setTimeout(() => {
                 setShowStartImage(false);
             }, 1000); // 1秒後にStart.pngを非表示にする
-
             return () => clearTimeout(startTimer);
+        }
+        
+        // socket通信を行う
+        if (countdown === 0){
+
         }
     }, [countdown]);
 
@@ -149,6 +159,48 @@ const Squat: React.FC = () => {
             }
         }
     };
+
+    // ソケット通信の初期設定
+    useEffect(() => {
+        const loc = window.location;
+        const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsUrl = wsStart + loc.host + '/ws/consumer';
+        const websocket = new WebSocket(wsUrl);
+
+        websocket.onopen = () => {
+            console.log('WebSocket is open now.');
+        };
+
+        websocket.onclose = () => {
+            console.log('WebSocket is closed now.');
+        };
+
+        websocket.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
+
+        setWs(websocket);
+
+        return () => {
+            websocket.close();
+        };
+    }, []);
+
+    // カウント時に値を送信
+    useEffect(() => {
+        const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+        const name = location.state.name;
+        if (ws) {
+            ws.send(JSON.stringify({
+                message: {
+                    "id" : id,
+                    "cnt": squatCount,
+                    "name" : name,
+                    "state" : "counting"
+                }
+            }));
+        }
+    },[squatCount])
 
     // ポーズのランドマークを水平反転させる関数
     const flipLandmarks = (landmarks: NormalizedLandmarkList) => {

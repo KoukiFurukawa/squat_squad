@@ -9,4 +9,4 @@ uvicorn==0.15.0
 django-redis==5.4.0
 daphne==2.5.0
 django-cors-headers==4.4.0
-channels_redis==4.2.0
+channels-redis==4.2.0

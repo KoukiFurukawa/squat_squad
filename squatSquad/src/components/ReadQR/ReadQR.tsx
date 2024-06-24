@@ -13,7 +13,7 @@ const ReadQR = () => {
     const navigate = useNavigate();
 
     const { ref } = useZxing({
-        onDecodeResult(result: {getText: () => string}) {
+        onDecodeResult(result) {
             const text = result.getText();
             setReadValue(true);
             setName(text)

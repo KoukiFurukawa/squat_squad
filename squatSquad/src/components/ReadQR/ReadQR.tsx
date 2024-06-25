@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { IUserInfo } from '../../interfaces/interfaces';
+import "./ReadQR.css";
 
 const ReadQR = () => {
 
@@ -29,18 +30,26 @@ const ReadQR = () => {
 
 
     return (
-        <div>
-            <button>WebSocket</button>
+        <div className='back'>
             {readValue ?
-                <div>
-                    <p>{team} チーム所属</p>
-                    <p>{name} さん</p>
-                    <button type='button' onClick={transitionToSquat}>確認</button>
+                <div className='backmodal'>    
+                    <div className='modal_QRdata'>
+                        <span></span>
+                        <div>
+                            <p>{team} チーム所属</p>
+                            <p>{name} さん</p>
+                        </div>
+                        <button type='button' onClick={transitionToSquat}>スクワットを始める</button>
+                    </div>
                 </div>
                 :
                 <></>
             }
-            <video ref={ref} />
+            <div className='videobox'>
+                <p>スマホのQRコードをかざしてください</p>
+                <video ref={ref} />
+            </div>
+            
         </div>
     )
 }

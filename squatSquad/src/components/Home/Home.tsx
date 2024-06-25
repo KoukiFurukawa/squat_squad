@@ -7,23 +7,22 @@ import React, { useEffect, useState } from "react";
 import QRCode from "qrcode.react";
 import "./Home.css";
 
-const Home = () => 
-{
+const Home = () => {
     const [isLogin, setLogin] = useState<boolean>(false)
     const [name, setName] = useState("");
     const [exercise_pre, setExercise_pre] = useState("");
-    const [team,setTeam] = useState("白");
-    const [alert_name,setAlert_name] = useState("");
-    const [alert_exer,setAlert_exer] = useState("");
+    const [team, setTeam] = useState("白");
+    const [alert_name, setAlert_name] = useState("");
+    const [alert_exer, setAlert_exer] = useState("");
     const [viewQR, setViewQR] = useState<boolean>(false)
 
     const toggleLoginState = () => {
-        if (isLogin) { 
+        if (isLogin) {
             setLogin(false);
             setAlert_name("");
             setAlert_exer("");
-            localStorage.setItem("name",name);
-            localStorage.setItem("exercise_pre",exercise_pre);
+            localStorage.setItem("name", name);
+            localStorage.setItem("exercise_pre", exercise_pre);
         }
         else {
             setLogin(true)
@@ -34,7 +33,7 @@ const Home = () =>
         setExercise_pre(btnID);
 
         const buttons = document.querySelectorAll(".btnbox button");
-        buttons.forEach(button => {button.classList.remove("selected");});
+        buttons.forEach(button => { button.classList.remove("selected"); });
 
         const clickedButton = document.getElementById(btnID);
         if (clickedButton) {
@@ -71,22 +70,22 @@ const Home = () =>
             setName(stored_name);
             setExercise_pre(stored_exer);
         }
-    },[]);
+    }, []);
 
     const makeQRvalue = () => {
-        const value = JSON.stringify({name: name, team: team});
+        const value = JSON.stringify({ name: name, team: team });
         const encoder = new TextEncoder();
         return encoder.encode(value);
     }
 
-    return(
+    return (
         <>
-            { isLogin ? 
+            {isLogin ?
                 <div className="modal">
                     <div className="form">
                         <div>
                             <div>{`名前を入力して下さい${alert_name}`}</div>
-                            <input type="text" value={name} onChange={(e)=>{setName(e.target.value)}} />
+                            <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} />
                         </div>
                         <div>
                             <div>{`運動の得意不得意を入力して下さい${alert_exer}`}</div>
@@ -98,43 +97,43 @@ const Home = () =>
                                 <button id="5" onClick={(e) => changeExer(e.currentTarget.id)}>5</button>
                             </div>
                         </div>
-                        <button type="submit" onClick={()=>{check_input()}}>OK</button>
+                        <button type="submit" onClick={() => { check_input() }}>OK</button>
                     </div>
                 </div>
-            :<>
-                <div className="home">
-                    <div className="mydata">
-                        <div>{`${name}`}</div>
-                        <div>{`スクワット回数 : ${exercise_pre}`}</div>
-                        <div>最大応援タップ数 : 100</div>
-                    </div>
-                    <div className="teamdata">
-                        <div>{`${team}チーム`}</div>
-                        <div>チーム総得点 : </div>
-                    </div>
-                    { viewQR ?
-                        <div className="QRmodal">
-                            <div className="QRCode">
-                                <QRCode
-                                    size={256}
-                                    value={`${name}${team}`}
-                                />
+                : <>
+                    <div className="home">
+                        <div className="mydata">
+                            <div>{`${name}`}</div>
+                            <div>{`スクワット回数 : ${exercise_pre}`}</div>
+                            <div>最大応援タップ数 : 100</div>
+                        </div>
+                        <div className="teamdata">
+                            <div>{`${team}チーム`}</div>
+                            <div>チーム総得点 : </div>
+                        </div>
+                        {viewQR ?
+                            <div className="QRmodal">
+                                <div className="QRCode">
+                                    <QRCode
+                                        size={256}
+                                        value={`${name}${team}`}
+                                    />
+                                </div>
+                                <button onClick={() => setViewQR(false)}>閉じる</button>
                             </div>
-                            <button onClick={() => setViewQR(false)}>閉じる</button>
-                        </div>
-                    :<>
-                        <div className="buttons">
-                        <button onClick={()=>{setViewQR(true)}}>QRコードの表示</button>
-                        <button onClick={()=>{}}>応援する</button>
-                        </div>
-                    </>
-                    }
-                
-                
-            </div>
-            <button onClick={()=>{reset_data()}}>reset</button>
-            <button onClick={()=>{toggleLoginState()}}>reModal</button>
-            </>
+                            : <>
+                                <div className="buttons">
+                                    <button onClick={() => { setViewQR(true) }}>QRコードの表示</button>
+                                    <button onClick={() => { }}>応援する</button>
+                                </div>
+                            </>
+                        }
+
+
+                    </div>
+                    <button onClick={() => { reset_data() }}>reset</button>
+                    <button onClick={() => { toggleLoginState() }}>reModal</button>
+                </>
             }
 
         </>

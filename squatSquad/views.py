@@ -41,7 +41,6 @@ def index(request):
     # print(increment_shared_variable(3))
     return render(request, "squatSquad/index.html")
 
-
 def total(request):
     if request.method == "GET":
         return render(request, "squatSquad/total.html")

@@ -33,7 +33,11 @@ const ReadQR = () => {
         <div className='back'>
             {readValue ?
                 <div className='backmodal'>    
+<<<<<<< HEAD
+                    <div className='modal_QRdata'>
+=======
                     <div className='modal'>
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
                         <span></span>
                         <div>
                             <p>{team} チーム所属</p>

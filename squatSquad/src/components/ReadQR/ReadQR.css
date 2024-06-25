@@ -1,8 +1,14 @@
 /* ReadQR.css */
+<<<<<<< HEAD
+
+.back {
+    font-size: 40px;
+=======
 * {
     font-size: 40px;
 }
 .back {
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,7 +24,11 @@
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 10;
 }
+<<<<<<< HEAD
+.modal_QRdata {
+=======
 .modal {
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
     z-index: 11;
     display: flex;
     flex-direction: column;
@@ -33,12 +43,20 @@
     height: 70%;
 }
 
+<<<<<<< HEAD
+.modal_QRdata p {
+=======
 .modal p {
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
     margin: 10px 0;
     color: #333;
 }
 
+<<<<<<< HEAD
+.modal_QRdata button {
+=======
 .modal button {
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
     padding: 10px 20px;
     margin-top: 70px;
     color: white;
@@ -47,8 +65,14 @@
     border-radius: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+<<<<<<< HEAD
+    font-size: 40px;
+}
+.modal_QRdata button:hover {
+=======
 }
 .modal button:hover {
+>>>>>>> bc411384f9d4ed65fb8134108ed2672ad1550ab8
     background-color: darkorange;
 }
 

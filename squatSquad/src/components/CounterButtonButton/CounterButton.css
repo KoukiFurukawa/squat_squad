@@ -1,13 +1,3 @@
-/* styles.css */
-body,
-html {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .container {
   text-align: center;
 }
@@ -25,7 +15,7 @@ html {
   background: #668ad8;
   /* ボタン色 */
   color: #FFF;
-  border-bottom: solid 4px #627295;
+  border-bottom: solid 6px #627295;
   border-radius: 50%;
   /* 円形にする */
   font-size: 1em;

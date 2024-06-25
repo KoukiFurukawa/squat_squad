@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.red-team {
+  color: red;
+}
+
+.blue-team {
+  color: blue;
+}
+
+.main-message {
+  text-align: center;
+  font-size: 2em;
+  margin: 0 0 10px 0;
+}
+
+.message {
+  text-align: center;
+  font-size: 1.4em;
+  margin: 0 0 10px 0;
+}
+
+.btn-square-shadow {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  line-height: 200px;
+  text-align: center;
+  text-decoration: none;
+  background: #ff8400;
+  color: #FFF;
+  border-bottom: solid 8px #300f00;
+  border-radius: 50%;
+  font-size: 6em;
+  margin-bottom: 20px;
+  transition: background 0.3s;
+}
+
+.btn-square-shadow.active {
+  background: #e07400;
+}
+
+.btn-square-shadow:active {
+  -webkit-transform: translateY(4px);
+  transform: translateY(4px);
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+  border-bottom: none;
+}
+
+p {
+  margin: 0;
+}

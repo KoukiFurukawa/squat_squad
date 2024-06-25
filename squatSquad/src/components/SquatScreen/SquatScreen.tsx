@@ -48,17 +48,29 @@ const Squat: React.FC = () => {
 
     // カウントダウン終了時のStart.pngの表示ロジック
     useEffect(() => {
+        // socket通信を行う
+        if (countdown === 0){
+            const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+            const name = location.state.name;
+            if (ws) {
+                ws.send(JSON.stringify({
+                    message: {
+                        "id" : id,
+                        "cnt": squatCount,
+                        "name" : name,
+                        "state" : "start"
+                    }
+                }));
+            }else{
+                console.log("通信失敗")
+            }
+        }
         if (countdown === 0) {
             setShowStartImage(true);
             const startTimer = setTimeout(() => {
                 setShowStartImage(false);
             }, 1000); // 1秒後にStart.pngを非表示にする
             return () => clearTimeout(startTimer);
-        }
-        
-        // socket通信を行う
-        if (countdown === 0){
-
         }
     }, [countdown]);
 
@@ -81,6 +93,23 @@ const Squat: React.FC = () => {
 
     // カウントダウン終了時の処理
     useEffect(() => {
+        if (ws && exerciseFinished)
+        {
+            const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+            const name = location.state.name;
+            if (ws) {
+                ws.send(JSON.stringify({
+                    message: {
+                        "id" : id,
+                        "cnt": squatCount,
+                        "name" : name,
+                        "state" : "end"
+                    }
+                }));
+            }else{
+                console.log("通信失敗")
+            }
+        }
         if (exerciseFinished) {
             setShowFinishedImage(true);
             const finishTimer = setTimeout(() => {
@@ -199,6 +228,8 @@ const Squat: React.FC = () => {
                     "state" : "counting"
                 }
             }));
+        }else{
+            console.log("通信失敗")
         }
     },[squatCount])
 

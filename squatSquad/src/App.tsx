@@ -7,7 +7,7 @@ import Home from './components/Home/Home';
 import Squat from './components/SquatScreen/SquatScreen';
 import Result from './components/Result/Result';
 import ReadQR from './components/ReadQR/ReadQR';
-import CounterButton from './components/CounterButtonButton/CounterButton';
+import CounterButton from './components/CounterButton/CounterButton';
 
 function App() {
   return (

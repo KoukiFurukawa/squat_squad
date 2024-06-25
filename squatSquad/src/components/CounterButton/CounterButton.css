@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  position: relative;
 }
 
 .red-team {
@@ -55,4 +56,23 @@
 
 p {
   margin: 0;
+}
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #ff8400;
+  color: #FFF;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.back-button:hover {
+  background-color: #e07400;
 }

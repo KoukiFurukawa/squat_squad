@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const messageData = JSON.parse(event.data).message;
         // console.log(messageData)
         const id = messageData.id;
+        const name = messageData.name;
         const cnt = messageData.cnt;
         const state = messageData.state;
 
@@ -50,11 +51,13 @@ document.addEventListener("DOMContentLoaded", function() {
         {
             if (id == "r_cnt")
             {
+                document.getElementById("r_name").innerHTML = name;
                 change_mode(btn_r, list_r)
             }
             else
             {
                 change_mode(btn_w, list_w)
+                document.getElementById("b_name").innerHTML = name;
             }
         }
         else if (state == "counting")

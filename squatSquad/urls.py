@@ -13,4 +13,5 @@ urlpatterns = [
     path("calculate_score_white", calculate_score_white, name="calculate_score_white"),
     path("readqr", index, name="readqr"),
     path("squat", index, name="squat"),
+    path("total_score", getTotalScore, name="total_score"),
 ]

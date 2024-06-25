@@ -1,8 +1,7 @@
 /* ReadQR.css */
-* {
-    font-size: 40px;
-}
+
 .back {
+    font-size: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,7 +17,7 @@
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 10;
 }
-.modal {
+.modal_QRdata {
     z-index: 11;
     display: flex;
     flex-direction: column;
@@ -33,12 +32,12 @@
     height: 70%;
 }
 
-.modal p {
+.modal_QRdata p {
     margin: 10px 0;
     color: #333;
 }
 
-.modal button {
+.modal_QRdata button {
     padding: 10px 20px;
     margin-top: 70px;
     color: white;
@@ -47,8 +46,9 @@
     border-radius: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-size: 40px;
 }
-.modal button:hover {
+.modal_QRdata button:hover {
     background-color: darkorange;
 }
 

@@ -33,7 +33,7 @@ const ReadQR = () => {
         <div className='back'>
             {readValue ?
                 <div className='backmodal'>    
-                    <div className='modal'>
+                    <div className='modal_QRdata'>
                         <span></span>
                         <div>
                             <p>{team} チーム所属</p>

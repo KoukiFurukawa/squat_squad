@@ -5,6 +5,8 @@
 
 import React, { useEffect, useState } from "react";
 import QRCode from "qrcode.react";
+import { useNavigate } from 'react-router-dom';
+import { IUserInfo } from "../../interfaces/interfaces";
 import "./Home.css";
 
 const Home = () => {
@@ -15,6 +17,7 @@ const Home = () => {
     const [alert_name, setAlert_name] = useState("");
     const [alert_exer, setAlert_exer] = useState("");
     const [viewQR, setViewQR] = useState<boolean>(false)
+    const navigate = useNavigate();
 
     const toggleLoginState = () => {
         if (isLogin) {
@@ -78,6 +81,11 @@ const Home = () => {
         return encoder.encode(value);
     }
 
+    const transitionToButton = () => {
+        const data: IUserInfo = { name: name, team: team }
+        navigate("/button", { state: data })
+    }
+
     return (
         <>
             {isLogin ?
@@ -124,7 +132,7 @@ const Home = () => {
                             : <>
                                 <div className="buttons">
                                     <button onClick={() => { setViewQR(true) }}>QRコードの表示</button>
-                                    <button onClick={() => { }}>応援する</button>
+                                    <button onClick={transitionToButton}>応援する</button>
                                 </div>
                             </>
                         }

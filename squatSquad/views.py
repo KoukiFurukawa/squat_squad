@@ -73,7 +73,7 @@ def isExercising(request):
 def cheering_red(request):
     if request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
-        amount = req_body["cnt"]
+        amount = int(req_body["cnt"])
         cache_key = "count_cheer_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
@@ -87,7 +87,8 @@ def cheering_red(request):
 def cheering_white(request):
     if request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
-        amount = req_body["cnt"]
+        amount = int(req_body["cnt"])
+        print(amount)
         cache_key = "count_cheer_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
@@ -101,7 +102,7 @@ def cheering_white(request):
 def calculate_score_red(request):
     if request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
-        squat = req_body["cnt"]
+        squat = int(req_body["cnt"])
         cache_key = "total_score_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
@@ -117,7 +118,7 @@ def calculate_score_red(request):
 def calculate_score_white(request):
     if request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
-        squat = req_body["cnt"]
+        squat = int(req_body["cnt"])
         cache_key = "total_score_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
@@ -149,7 +150,6 @@ def getTotalScore(request):
         return HttpResponse("No")
 
 # チーム判定 ---------------------------------------------------------------------
-@csrf_exempt
 def divide_teams(request):
     if request.method == "GET":
         return HttpResponse("only post")

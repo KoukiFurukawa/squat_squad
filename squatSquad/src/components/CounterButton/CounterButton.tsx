@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CounterButton.css';
 
@@ -10,6 +10,7 @@ const CounterButton: React.FC = () => {
     const [ws, setWs] = useState<any>(null);
     const [valid, setValid] = useState<boolean>(false);
     const navigate = useNavigate();
+    const buttonRef = useRef<HTMLButtonElement>(null)
 
     // ソケット通信の初期設定
     useEffect(() => {
@@ -38,21 +39,25 @@ const CounterButton: React.FC = () => {
             const state = messageData.state;
             const SC_TEAM = id === "r_cnt" ? "赤" : "白"
 
+            const current_count = buttonRef.current?.innerText;
+            console.log(current_count)
+
             if (state == "start" && teamName == SC_TEAM)
             {
                 setValid(true)
             }
-            else if (state == "end")
+            else if (state == "end" && teamName == SC_TEAM)
             {
                 setValid(false)
-                setCount(0)
                 if (teamName == "赤")
                 {
                     fetch("/cheering_red", {
                         method: "POST",
                         body: JSON.stringify({
-                            cnt: count
+                            cnt: current_count
                         })
+                    }).then(() => {
+                        setCount(0)
                     })
                 }
                 else
@@ -60,8 +65,10 @@ const CounterButton: React.FC = () => {
                     fetch("/cheering_white", {
                         method: "POST",
                         body: JSON.stringify({
-                            cnt: count
+                            cnt: current_count
                         })
+                    }).then(() => {
+                        setCount(0)
                     })
                 }
             }
@@ -104,6 +111,7 @@ const CounterButton: React.FC = () => {
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onClick={handleClick}
+                ref={buttonRef}
             >
                 {count}
             </button>

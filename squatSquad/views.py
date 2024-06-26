@@ -69,27 +69,33 @@ def isExercising(request):
         value = cache.get(cache_key, 0)
         return JsonResponse({"left_time":value})
 
+@csrf_exempt
 def cheering_red(request):
     if request.method == "POST":
-        amount = 1
+        req_body = json.loads(request.body.decode('utf-8'))
+        amount = req_body["cnt"]
         cache_key = "count_cheer_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
             value = cache.get(cache_key, 0)
             value += amount
             cache.set(cache_key, value, timeout=None)
-            return JsonResponse({cache_key:value})
-        
+            print("応援回数(赤) : ", value)
+            return JsonResponse({})
+
+@csrf_exempt
 def cheering_white(request):
     if request.method == "POST":
-        amount = 1
+        req_body = json.loads(request.body.decode('utf-8'))
+        amount = req_body["cnt"]
         cache_key = "count_cheer_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
             value = cache.get(cache_key, 0)
             value += amount
             cache.set(cache_key, value, timeout=None)
-            return JsonResponse({cache_key:value})
+            print("応援回数(白) : ", value)
+            return JsonResponse({})
         
 @csrf_exempt
 def calculate_score_red(request):
@@ -104,6 +110,7 @@ def calculate_score_red(request):
             score = squat * (cheer // 100 + 1)
             total_score += score
             cache.set(cache_key, total_score, timeout=None)
+            cache.set("count_cheer_red", 0, timeout=None)
             return JsonResponse({"score":score, "total": total_score})
 
 @csrf_exempt
@@ -119,6 +126,7 @@ def calculate_score_white(request):
             score = squat * (cheer // 100 + 1)
             total_score += score
             cache.set(cache_key, total_score, timeout=None)
+            cache.set("count_cheer_white", 0, timeout=None)
             return JsonResponse({"score":score, "total": total_score})
 
 @csrf_exempt
@@ -141,6 +149,7 @@ def getTotalScore(request):
         return HttpResponse("No")
 
 # チーム判定 ---------------------------------------------------------------------
+@csrf_exempt
 def divide_teams(request):
     if request.method == "GET":
         return HttpResponse("only post")

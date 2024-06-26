@@ -1,12 +1,78 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './CounterButton.css';
 
 const CounterButton: React.FC = () => {
-    const teamName = '赤';
+    const location = useLocation();
+    const teamName = location.state.team
     const [count, setCount] = useState(0);
     const [isPressed, setIsPressed] = useState(false);
+    const [ws, setWs] = useState<any>(null);
+    const [valid, setValid] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    // ソケット通信の初期設定
+    useEffect(() => {
+        const loc = window.location;
+        const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsUrl = wsStart + loc.host + '/ws/consumer';
+        const websocket = new WebSocket(wsUrl);
+
+        websocket.onopen = () => {
+            console.log('WebSocket is open now.');
+        };
+
+        websocket.onclose = () => {
+            console.log('WebSocket is closed now.');
+        };
+
+        websocket.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
+
+        websocket.onmessage = (event) => {
+            const messageData = JSON.parse(event.data).message;
+            const id = messageData.id;
+            const name = messageData.name;
+            const cnt = messageData.cnt;
+            const state = messageData.state;
+            const SC_TEAM = id === "r_cnt" ? "赤" : "白"
+
+            if (state == "start" && teamName == SC_TEAM)
+            {
+                setValid(true)
+            }
+            else if (state == "end")
+            {
+                setValid(false)
+                setCount(0)
+                if (teamName == "赤")
+                {
+                    fetch("/cheering_red", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            cnt: count
+                        })
+                    })
+                }
+                else
+                {
+                    fetch("/cheering_white", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            cnt: count
+                        })
+                    })
+                }
+            }
+        }
+
+        setWs(websocket);
+
+        return () => {
+            websocket.close();
+        };
+    }, []);
 
     const handleMouseDown = () => {
         setIsPressed(true);
@@ -17,7 +83,7 @@ const CounterButton: React.FC = () => {
     };
 
     const handleClick = () => {
-        setCount(count + 1);
+        if (valid) { setCount(count+1) }      
     };
 
     const handleBackClick = () => {
@@ -33,15 +99,14 @@ const CounterButton: React.FC = () => {
                 あなたは<br />
                 <span className={teamClass}>{teamName}チーム</span>です！
             </p>
-            <a
-                href="#"
+            <button
                 className={`btn-square-shadow ${isPressed ? 'active' : ''}`}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onClick={handleClick}
             >
                 {count}
-            </a>
+            </button>
             <p className="message">
                 ボタンを連打して<br />チームを応援しよう！
             </p>

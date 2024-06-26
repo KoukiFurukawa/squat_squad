@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
             await setTimeout(() => {}, 5000)
             if (id == "r_cnt")
             {
+                // 数秒間結果を表示する
                 // setTimeout(function(){
                 //     fetch("/calculate_score_red", {
                 //         method: "POST",

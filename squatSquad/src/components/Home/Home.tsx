@@ -55,14 +55,14 @@ const Home = () => {
         if (name != "" && exercise_pre != "") {
             fetch("/divide_teams", {
                 method: "POST",
-                body : JSON.stringify({
+                body: JSON.stringify({
                     name: name, score: exercise_pre
                 })
             }).then((response) => response.json())
-            .then((res) => {
-                setTeam(res.team);
-                toggleLoginState();
-            })
+                .then((res) => {
+                    setTeam(res.team);
+                    toggleLoginState();
+                })
         }
         if (name == "") {
             setAlert_name("（必須）");
@@ -116,11 +116,9 @@ const Home = () => {
                         <div className="mydata">
                             <div>{`${name}`}</div>
                             <div>{`スクワット回数 : ${exercise_pre}`}</div>
-                            <div>最大応援タップ数 : 100</div>
                         </div>
                         <div className="teamdata">
                             <div>{`${team}チーム`}</div>
-                            <div>チーム総得点 : </div>
                         </div>
                         {viewQR ?
                             <div className="QRmodal">

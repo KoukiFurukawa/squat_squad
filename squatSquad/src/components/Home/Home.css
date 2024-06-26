@@ -1,43 +1,23 @@
-:root {
-    background-color: white;
-    height: 100%;
-}
-
+/* モーダルのスタイル */
 .modal {
     position: fixed;
-    z-index: 1;
-    border: 1px #000;
-    border-radius: 20px;
-    width: 90%;
-    height: 85%;
-    margin: 5%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-
+    justify-content: center;
+    align-items: center;
 }
 
 .form {
-    margin: auto;
+    background-color: white;
     padding: 20px;
-    width: 80%;
-    max-width: 500px;
+    border-radius: 5px;
     text-align: center;
 }
-.btnbox {
-    width: 100%;
-    margin: 10px 0 30px;
-    display: flex;
-    justify-content: space-around;
-}
-.btnbox button {
-    background-color: white;
-    border: 1px solid;
-    border-radius: 3px;
-    width: 10%;
-    padding: 10px;
-}
-.btnbox button.selected {
-    background-color: orange;
-}
+
 input[type="text"] {
     width: 100%;
     padding: 10px;
@@ -45,7 +25,26 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-.home{
+/* ボタンボックスのスタイル */
+.btnbox {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+}
+
+.btnbox button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btnbox .selected {
+    background-color: #ff8400;
+    color: white;
+}
+
+.home {
     position: fixed;
     z-index: 1;
     border: 1px #000;
@@ -58,20 +57,24 @@ input[type="text"] {
     align-items: center;
     justify-content: center;
 }
-.mydata{
+
+.mydata {
     width: 50%;
     padding-bottom: 3%;
 }
-.teamdata{
+
+.teamdata {
     width: 50%;
     padding-bottom: 3%;
 }
+
 .buttons {
     width: 50%;
     padding-top: 2%;
     display: flex;
     gap: 8px;
 }
+
 .QRmodal {
     background-color: white;
     position: fixed;
@@ -95,4 +98,8 @@ input[type="text"] {
 .QRcontent img {
     width: 200px;
     height: 200px;
+}
+
+button:hover {
+    background-color: #ffac54;
 }

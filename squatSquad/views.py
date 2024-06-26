@@ -141,6 +141,7 @@ def getTotalScore(request):
         return HttpResponse("No")
 
 # チーム判定 ---------------------------------------------------------------------
+@csrf_exempt
 def divide_teams(request):
     if request.method == "GET":
         return HttpResponse("only post")
@@ -148,25 +149,27 @@ def divide_teams(request):
     elif request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
         name = req_body["name"]
-        score = req_body["score"]
+        score = int(req_body["score"])
         cache_key_red = "red_ability"
         cache_key_white = "white_ability"
         team = ""
         
         with redis_lock(cache_key_red + "_lock"):
-            red_ability = cache.get(cache_key_red)
-            white_ability = cache.get(cache_key_white)
+            red_ability = cache.get(cache_key_red, 0)
+            white_ability = cache.get(cache_key_white, 0)
             if red_ability > white_ability:
                 red_ability += score
-                team = "red"
+                team = "赤"
             else:
                 white_ability += score
-                team = "white"
+                team = "青"
             cache.set(cache_key_red, red_ability, timeout=None)
             cache.set(cache_key_white,white_ability, timeout=None)
             
         with redis_lock("user_lock"):
             user_data = get_dict_from_redis("user")
+            if user_data is None:
+                user_data = {}
             user_data[name] = { "score" : 0, "team" : team }
             set_dict_in_redis("user", user_data)
             

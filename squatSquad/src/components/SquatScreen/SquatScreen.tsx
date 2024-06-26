@@ -9,6 +9,7 @@ import Up from "./squat_image/Up.png";
 import Down from "./squat_image/Down.png";
 import Start from './squat_image/Start.png';
 import Finished from './squat_image/Finished.png';
+import { Link } from 'react-router-dom'
 
 // スクワットをカウントするコンポーネント
 const Squat: React.FC = () => {
@@ -21,11 +22,13 @@ const Squat: React.FC = () => {
     const [isUp, setIsUp] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<number>(5);
     const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
-    const [exerciseCountdown, setExerciseCountdown] = useState<number>(30);
+    const [exerciseCountdown, setExerciseCountdown] = useState<number>(3);
     const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
     const [showStartImage, setShowStartImage] = useState<boolean>(false);
     const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);
     const [ws, setWs] = useState<any>(null);
+    const [result, setResult] = useState<number>(0);
+    const [showResult,setshowResult] = useState<boolean>(false);
 
     const location = useLocation();
     const [selectId, setSelectId] = useState<IUserInfo>(location.state)
@@ -114,8 +117,9 @@ const Squat: React.FC = () => {
             setShowFinishedImage(true);
             const finishTimer = setTimeout(() => {
                 setShowFinishedImage(false);
+                setResult(squatCount);
+                setshowResult(true);
             }, 5000); // 5秒後にFinished.pngを非表示にする
-
             return () => clearTimeout(finishTimer);
         }
     }, [exerciseFinished]);
@@ -364,6 +368,19 @@ const Squat: React.FC = () => {
             {showFinishedImage && (
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
                     <img src={Finished} alt="Finished" style={{ width: '100%', height: 'auto' }} />
+                </div>
+            )}
+            {showResult &&  (
+                <div style={{ position: 'fixed', width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, }}>
+                    <div style={{backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '50%',height: '50%', 
+                        textAlign: 'center', display: 'flex', flexDirection: "column", justifyContent: 'center'}}>
+                        <h2 style={{fontSize: '40px',margin: '10px'}}>結果</h2>
+                        <p style={{fontSize: '40px'}}>スクワット回数 :  {result}回</p>
+                        <Link to="http://127.0.0.1:8000/readqr" style={{ textDecoration: 'none' }} onClick={() => setshowResult(false)}>
+                            <button style={{fontSize: '40px', marginTop: '40px'}}>閉じる</button>
+                        </Link>
+                    </div>
                 </div>
             )}
         </div>

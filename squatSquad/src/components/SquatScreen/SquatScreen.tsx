@@ -22,7 +22,7 @@ const Squat: React.FC = () => {
     const [isUp, setIsUp] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<number>(5);
     const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
-    const [exerciseCountdown, setExerciseCountdown] = useState<number>(30);
+    const [exerciseCountdown, setExerciseCountdown] = useState<number>(3);
     const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
     const [showStartImage, setShowStartImage] = useState<boolean>(false);
     const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);

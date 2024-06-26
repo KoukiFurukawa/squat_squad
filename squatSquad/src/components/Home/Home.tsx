@@ -13,7 +13,7 @@ const Home = () => {
     const [isLogin, setLogin] = useState<boolean>(false)
     const [name, setName] = useState("");
     const [exercise_pre, setExercise_pre] = useState("");
-    const [team, setTeam] = useState("白");
+    const [team, setTeam] = useState("");
     const [alert_name, setAlert_name] = useState("");
     const [alert_exer, setAlert_exer] = useState("");
     const [viewQR, setViewQR] = useState<boolean>(false)
@@ -53,7 +53,16 @@ const Home = () => {
 
     const check_input = () => {
         if (name != "" && exercise_pre != "") {
-            toggleLoginState();
+            fetch("/divide_teams", {
+                method: "POST",
+                body : JSON.stringify({
+                    name: name, score: exercise_pre
+                })
+            }).then((response) => response.json())
+            .then((res) => {
+                setTeam(res.team);
+                toggleLoginState();
+            })
         }
         if (name == "") {
             setAlert_name("（必須）");
@@ -74,12 +83,6 @@ const Home = () => {
             setExercise_pre(stored_exer);
         }
     }, []);
-
-    const makeQRvalue = () => {
-        const value = JSON.stringify({ name: name, team: team });
-        const encoder = new TextEncoder();
-        return encoder.encode(value);
-    }
 
     const transitionToButton = () => {
         const data: IUserInfo = { name: name, team: team }

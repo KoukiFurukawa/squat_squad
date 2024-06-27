@@ -7,6 +7,7 @@ import Home from './components/Home/Home';
 import Squat from './components/SquatScreen/SquatScreen';
 import Result from './components/Result/Result';
 import ReadQR from './components/ReadQR/ReadQR';
+import Total from './components/Total/Total';
 import CounterButton from './components/CounterButton/CounterButton';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/total' element={<Total />} />
         <Route path='/readqr' element={<ReadQR />}></Route>
         <Route path='/squat' element={<Squat />}></Route>
         <Route path='/result' element={<Result />}></Route>

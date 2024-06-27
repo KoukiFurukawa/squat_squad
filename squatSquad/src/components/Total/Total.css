@@ -1,0 +1,49 @@
+/* html {
+    height: 100%;
+} */
+
+.wrapper {
+    height: 100vh;
+}
+
+.containers {
+    display: flex;
+    flex-direction: row;
+    border: 1px;
+    width: 90%;
+    height: 100%;
+    margin: auto;
+}
+
+.team {
+    display: flex;
+    border-left: 1px solid #000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 100%;
+    font-size: 300%;
+    /* flex: 1; */
+}
+.team:first-child {
+    border-left: none;
+}
+
+
+.pt {
+    display: flex;
+}
+.hide {
+    display: none;
+}
+.counter {
+    display: flex;
+    justify-content: center;
+}
+
+/* button {
+    position: absolute;
+    bottom: 10px;
+} */

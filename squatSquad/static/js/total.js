@@ -9,18 +9,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const wsUrl = wsStart + loc.host + "/ws/consumer";
     const ws = new WebSocket(wsUrl);
 
-    fetch("/total_score", {
-        method: "POST",
-        body : JSON.stringify({})
-    })
-    .then((response) => response.json())
-    .then((res) => {
-        const red_score = res["red"];
-        const blue_score = res["blue"];
-        document.getElementById("r_pt").innerHTML = red_score
-        document.getElementById("b_pt").innerHTML = blue_score
-    })
-
     ws.onopen = function(event)
     {
         console.log("WebSocket is open now.");
@@ -67,34 +55,33 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         else if (state == "end")
         {
-            await setTimeout(() => {}, 5000)
             if (id == "r_cnt")
             {
-                // setTimeout(function(){
-                //     fetch("/calculate_score_red", {
-                //         method: "POST",
-                //         body : JSON.stringify({
-                //             cnt: cnt
-                //         })
-                //     }).then((response) => response.json())
-                //     .then((res) => {
-                //         const score = res.score
-                //         const total = res.total
-                //         document.getElementById("r_pt").innerHTML = total
-                //     })
-                // }, 5000)
-                change_mode(btn_r, list_r)
-                fetch("/calculate_score_red", {
-                    method: "POST",
-                    body : JSON.stringify({
-                        cnt: cnt
+                setTimeout(function(){
+                    fetch("/calculate_score_red", {
+                        method: "POST",
+                        body : JSON.stringify({
+                            cnt: cnt
+                        })
+                    }).then((response) => response.json())
+                    .then((res) => {
+                        const score = res.score
+                        const total = res.total
+                        document.getElementById("r_pt").innerHTML = total
                     })
-                }).then((response) => response.json())
-                .then((res) => {
-                    const score = res.score
-                    const total = res.total
-                    document.getElementById("r_pt").innerHTML = total
-                })
+                }, 5000)
+                change_mode(btn_r, list_r)
+                // fetch("/calculate_score_red", {
+                //     method: "POST",
+                //     body : JSON.stringify({
+                //         cnt: cnt
+                //     })
+                // }).then((response) => response.json())
+                // .then((res) => {
+                //     const score = res.score
+                //     const total = res.total
+                //     document.getElementById("r_pt").innerHTML = total
+                // })
             }
             else
             {

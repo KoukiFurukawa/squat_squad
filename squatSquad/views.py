@@ -197,3 +197,18 @@ def get_dict_from_redis(key):
     if value is not None:
         return json.loads(value)
     return None
+
+
+@csrf_exempt
+def destroy(request):
+    if request.method == "DELETE":
+        lock_key = "initialization"
+        keys = [
+            "total_score_white", "total_score_red", 
+            "count_cheer_white", "count_cheer_red",
+            "white_ability", "red_ability"
+        ]
+        
+        for i in keys:
+            with redis_lock(lock_key + "_lock"):
+                cache.set(i, 0, timeout=None)

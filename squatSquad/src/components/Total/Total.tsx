@@ -15,6 +15,9 @@ function Total() {
     const [w_result, set_Wresult] = useState<number>(0)
     const [isR_result, setIsR_result] = useState<boolean>(false)
     const [isW_result, setIsW_result] = useState<boolean>(false)
+    const [r_score, setR_score] = useState<number>(0)
+    const [w_score, setW_score] = useState<number>(0)
+
 
 
     const toggleRedVisibility = (val: boolean) => {
@@ -111,6 +114,7 @@ function Total() {
                         const score = res.score
                         const total = res.total
                         setRedScore(total)
+                        setR_score(score)
                     })
 
                     toggleRedVisibility(false)
@@ -144,6 +148,7 @@ function Total() {
                         const score = res.score
                         const total = res.total
                         setBlueScore(total)
+                        setW_score(score)
                     })
 
                     toggleBlueVisibility(false)
@@ -167,40 +172,47 @@ function Total() {
         <div className='wrapper'>
         <div className="containers">
             <div className="team r">
-                <p>赤</p>
-                <div className="pt">
-                    <p id="r_pt">{redScore}</p>
+                <div className='team_header'>
+                    <p>赤チーム</p>
+                    <div className="pt">
+                        <p id="r_pt">{redScore}</p>
                     <p>pt</p>
+                    </div>
                 </div>
-                <div className={`squat ${isRedVisible ? '' : 'hide'}`}>
-                    <p className="username" id="r_name">{r_name}</p>
+                
+                <div className={`squat ${isRedVisible ? 'player' : 'hide'}`}>
+                    <p className="username" id="r_name">プレイヤー : {r_name}</p>
                     <div className="counter">
                         <p className="squat_count" id="r_cnt">{r_cnt}</p>
                         <p>回</p>
                     </div>
                 </div>
-                <div id="r_result" className={isR_result ? "result" : "result hide"}>
-                    <p>結果 : {r_result}回</p> 
+                <div id="r_result" className={isR_result ? "result" : "hide"}>
+                    <p>結果 : {r_result}回</p>
+                    <p>スコア : {r_score}</p>
                 </div>
                 {/* <button id="ch">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}
             </div>
         
             <div className="team w">
-                <p>白</p>
-                <div className="pt">
-                    <p id="b_pt">{blueScore}</p>
+                <div className='team_header'>
+                    <p>青チーム</p>
+                    <div className="pt">
+                        <p id="w_pt">{blueScore}</p>
                     <p>pt</p>
+                    </div>
                 </div>
-                <div className={`squat ${isBlueVisible ? '' : 'hide'}`}>
-                    <p className="username" id="b_name">{b_name}</p>
+                <div className={`squat ${isBlueVisible ? 'player' : 'hide'}`}>
+                    <p className="username" id="b_name">プレイヤー : {b_name}</p>
                     <div className="counter">
                         <p className="squat_count" id="w_cnt">{b_cnt}</p>
                         <p>回</p>
                     </div>
                 </div>
-                <div id="w_result" className={isW_result ? "result" : "result hide"}>
-                    <p>結果 : {w_result}回</p> 
+                <div id="w_result" className={isW_result ? "result" : "hide"}>
+                    <p>結果 : {w_result}回</p>
+                    <p>スコア : {w_score}</p>
                 </div>
                 {/* <button id="ch_w">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}

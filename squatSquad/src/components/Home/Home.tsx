@@ -10,13 +10,13 @@ import { IUserInfo } from "../../interfaces/interfaces";
 import "./Home.css";
 
 const Home = () => {
-    const [isLogin, setLogin] = useState<boolean>(false)
+    const [isLogin, setLogin] = useState<boolean>(false);
     const [name, setName] = useState("");
     const [exercise_pre, setExercise_pre] = useState("");
     const [team, setTeam] = useState("");
     const [alert_name, setAlert_name] = useState("");
     const [alert_exer, setAlert_exer] = useState("");
-    const [viewQR, setViewQR] = useState<boolean>(false)
+    const [viewQR, setViewQR] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const toggleLoginState = () => {
@@ -26,9 +26,8 @@ const Home = () => {
             setAlert_exer("");
             localStorage.setItem("name", name);
             localStorage.setItem("exercise_pre", exercise_pre);
-        }
-        else {
-            setLogin(true)
+        } else {
+            setLogin(true);
         }
     };
 
@@ -52,7 +51,7 @@ const Home = () => {
     };
 
     const check_input = () => {
-        if (name != "" && exercise_pre != "") {
+        if (name !== "" && exercise_pre !== "") {
             fetch("/divide_teams", {
                 method: "POST",
                 body: JSON.stringify({
@@ -62,13 +61,13 @@ const Home = () => {
                 .then((res) => {
                     setTeam(res.team);
                     toggleLoginState();
-                })
+                });
         }
-        if (name == "") {
+        if (name === "") {
             setAlert_name("（必須）");
         }
-        if (exercise_pre == "") {
-            setAlert_exer("（必須）")
+        if (exercise_pre === "") {
+            setAlert_exer("（必須）");
         }
     };
 
@@ -77,21 +76,29 @@ const Home = () => {
         const stored_exer = localStorage.getItem("exercise_pre");
         if (stored_name === null || stored_exer === null) {
             toggleLoginState();
-        }
-        else {
+        } else {
             setName(stored_name);
             setExercise_pre(stored_exer);
         }
     }, []);
 
     const transitionToButton = () => {
-        const data: IUserInfo = { name: name, team: team }
-        navigate("/button", { state: data })
-    }
+        const data: IUserInfo = { name: name, team: team };
+        navigate("/button", { state: data });
+    };
+
+    const getButtonClass = () => {
+        if (team === "赤") {
+            return "button-red";
+        } else if (team === "青") {
+            return "button-blue";
+        }
+        return "";
+    };
 
     return (
-        <>
-            {isLogin ?
+        <div className="container">
+            {isLogin ? (
                 <div className="modal">
                     <div className="form">
                         <div>
@@ -111,42 +118,36 @@ const Home = () => {
                         <button type="submit" onClick={() => { check_input() }}>OK</button>
                     </div>
                 </div>
-                : <>
-                    <div className="home">
-                        <div className="mydata">
-                            <div>{`${name}`}</div>
-                            <div>{`スクワット回数 : ${exercise_pre}`}</div>
-                        </div>
-                        <div className="teamdata">
-                            <div>{`${team}チーム`}</div>
-                        </div>
-                        {viewQR ?
-                            <div className="QRmodal">
-                                <div className="QRCode">
-                                    <QRCode
-                                        size={256}
-                                        value={`${name}${team}`}
-                                    />
-                                </div>
-                                <button onClick={() => setViewQR(false)}>閉じる</button>
-                            </div>
-                            : <>
-                                <div className="buttons">
-                                    <button onClick={() => { setViewQR(true) }}>QRコードの表示</button>
-                                    <button onClick={transitionToButton}>応援する</button>
-                                </div>
-                            </>
-                        }
-
-
+            ) : (
+                <div className="home">
+                    <div className="mydata">
+                        <div>{`${name}`}</div>
                     </div>
-                    <button onClick={() => { reset_data() }}>reset</button>
-                    <button onClick={() => { toggleLoginState() }}>reModal</button>
-                </>
-            }
-
-        </>
-    )
-}
+                    <div className="teamdata">
+                        <div>{`${team}チーム`}</div>
+                    </div>
+                    {viewQR ? (
+                        <div className="QRmodal">
+                            <div className="QRCode">
+                                <QRCode
+                                    size={256}
+                                    value={`${name}${team}`}
+                                />
+                            </div>
+                            <button onClick={() => setViewQR(false)}>閉じる</button>
+                        </div>
+                    ) : (
+                        <div className="buttons">
+                            <button className={getButtonClass()} onClick={() => { setViewQR(true) }}>QRコードの表示</button>
+                            <button className={getButtonClass()} onClick={transitionToButton}>応援する</button>
+                        </div>
+                    )}
+                    {/* <button onClick={() => { reset_data() }}>reset</button>
+                    <button onClick={() => { toggleLoginState() }}>reModal</button> */}
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default Home;

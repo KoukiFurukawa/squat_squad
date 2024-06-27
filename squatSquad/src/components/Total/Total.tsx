@@ -123,6 +123,7 @@ function Total() {
                     setIsR_result(true);
                     await new Promise(resolve => setTimeout(resolve, 10000));
                     setIsR_result(false);
+                    setRCnt(0)
 
                     // fetch("/calculate_score_red", {
                     //     method: "POST",
@@ -157,6 +158,7 @@ function Total() {
                     setIsW_result(true);
                     await new Promise(resolve => setTimeout(resolve, 10000));
                     setIsW_result(false);
+                    setBCnt(0)
                 }
             }
         }

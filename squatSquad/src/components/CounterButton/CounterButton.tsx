@@ -37,7 +37,7 @@ const CounterButton: React.FC = () => {
             const name = messageData.name;
             const cnt = messageData.cnt;
             const state = messageData.state;
-            const SC_TEAM = id === "r_cnt" ? "赤" : "白"
+            const SC_TEAM = id === "r_cnt" ? "赤" : "青"
 
             const current_count = buttonRef.current?.innerText;
             console.log(current_count)

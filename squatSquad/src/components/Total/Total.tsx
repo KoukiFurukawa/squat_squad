@@ -15,9 +15,12 @@ function Total() {
     const [w_result, set_Wresult] = useState<number>(0)
     const [isR_result, setIsR_result] = useState<boolean>(false)
     const [isW_result, setIsW_result] = useState<boolean>(false)
+<<<<<<< HEAD
     const [r_score, setR_score] = useState<number>(0)
     const [w_score, setW_score] = useState<number>(0)
 
+=======
+>>>>>>> b6957a4b6d253fb6946bcaa9d9269504ada3fab9
 
 
     const toggleRedVisibility = (val: boolean) => {
@@ -114,7 +117,10 @@ function Total() {
                         const score = res.score
                         const total = res.total
                         setRedScore(total)
+<<<<<<< HEAD
                         setR_score(score)
+=======
+>>>>>>> b6957a4b6d253fb6946bcaa9d9269504ada3fab9
                     })
 
                     toggleRedVisibility(false)
@@ -187,9 +193,14 @@ function Total() {
                         <p>回</p>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <div id="r_result" className={isR_result ? "result" : "hide"}>
                     <p>結果 : {r_result}回</p>
                     <p>スコア : {r_score}</p>
+=======
+                <div id="r_result" className={isR_result ? "result" : "result hide"}>
+                    <p>結果 : {r_result}回</p> 
+>>>>>>> b6957a4b6d253fb6946bcaa9d9269504ada3fab9
                 </div>
                 {/* <button id="ch">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}
@@ -210,9 +221,14 @@ function Total() {
                         <p>回</p>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <div id="w_result" className={isW_result ? "result" : "hide"}>
                     <p>結果 : {w_result}回</p>
                     <p>スコア : {w_score}</p>
+=======
+                <div id="w_result" className={isW_result ? "result" : "result hide"}>
+                    <p>結果 : {w_result}回</p> 
+>>>>>>> b6957a4b6d253fb6946bcaa9d9269504ada3fab9
                 </div>
                 {/* <button id="ch_w">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}

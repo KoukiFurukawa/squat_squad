@@ -47,20 +47,24 @@ const Home = () => {
     const reset_data = () => {
         setName("");
         setExercise_pre("");
+        setTeam("")
         localStorage.removeItem("name");
         localStorage.removeItem("exercise_pre");
+        localStorage.removeItem("team")
     };
 
-    const check_input = () => {
+    const check_input = async () => {
         if (name != "" && exercise_pre != "") {
-            fetch("/divide_teams", {
+            await fetch("/divide_teams", {
                 method: "POST",
                 body : JSON.stringify({
                     name: name, score: exercise_pre
                 })
             }).then((response) => response.json())
             .then((res) => {
+                console.log(res.team)
                 setTeam(res.team);
+                localStorage.setItem("team", res.team);
                 toggleLoginState();
             })
         }
@@ -75,12 +79,14 @@ const Home = () => {
     useEffect(() => {
         const stored_name = localStorage.getItem("name");
         const stored_exer = localStorage.getItem("exercise_pre");
-        if (stored_name === null || stored_exer === null) {
+        const stored_team = localStorage.getItem("team");
+        if (stored_name === null || stored_exer === null || stored_team === null) {
             toggleLoginState();
         }
         else {
             setName(stored_name);
             setExercise_pre(stored_exer);
+            setTeam(stored_team)
         }
     }, []);
 
@@ -108,7 +114,7 @@ const Home = () => {
                                 <button id="5" onClick={(e) => changeExer(e.currentTarget.id)}>5</button>
                             </div>
                         </div>
-                        <button type="submit" onClick={() => { check_input() }}>OK</button>
+                        <button type="button" onClick={() => { check_input() }}>OK</button>
                     </div>
                 </div>
                 : <>

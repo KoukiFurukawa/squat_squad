@@ -377,7 +377,7 @@ const Squat: React.FC = () => {
                         textAlign: 'center', display: 'flex', flexDirection: "column", justifyContent: 'center'}}>
                         <h2 style={{fontSize: '40px',margin: '10px'}}>結果</h2>
                         <p style={{fontSize: '40px'}}>スクワット回数 :  {result}回</p>
-                        <Link to="http://127.0.0.1:8000/readqr" style={{ textDecoration: 'none' }} onClick={() => setshowResult(false)}>
+                        <Link to="/readqr" style={{ textDecoration: 'none' }} onClick={() => setshowResult(false)}>
                             <button style={{fontSize: '40px', marginTop: '40px'}}>閉じる</button>
                         </Link>
                     </div>

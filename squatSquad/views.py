@@ -110,6 +110,8 @@ def calculate_score_red(request):
             cheer = cache.get("count_cheer_red", 0)
             score = squat * (cheer // 100 + 1)
             total_score += score
+            print("スコア",score, "トータル",total_score, "応援", cheer)
+            
             cache.set(cache_key, total_score, timeout=None)
             cache.set("count_cheer_red", 0, timeout=None)
             return JsonResponse({"score":score, "total": total_score})
@@ -126,6 +128,7 @@ def calculate_score_white(request):
             cheer = cache.get("count_cheer_white", 0)
             score = squat * (cheer // 100 + 1)
             total_score += score
+            print(score, total_score)
             cache.set(cache_key, total_score, timeout=None)
             cache.set("count_cheer_white", 0, timeout=None)
             return JsonResponse({"score":score, "total": total_score})
@@ -166,7 +169,7 @@ def divide_teams(request):
         with redis_lock(cache_key_red + "_lock"):
             red_ability = cache.get(cache_key_red, 0)
             white_ability = cache.get(cache_key_white, 0)
-            if red_ability > white_ability:
+            if red_ability < white_ability:
                 red_ability += score
                 team = "赤"
             else:

@@ -90,6 +90,11 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             else
             {
+                document.getElementById("w_result").innerHTML = `結果 :  ${cnt} 回`;
+                document.getElementById("w_result").classList.remove("hide");
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                document.getElementById("w_result").classList.add("hide");
+
                 change_mode(btn_w, list_w)
                 fetch("/calculate_score_white", {
                     method: "POST",

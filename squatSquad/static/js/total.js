@@ -70,25 +70,11 @@ document.addEventListener("DOMContentLoaded", function() {
             await setTimeout(() => {}, 5000)
             if (id == "r_cnt")
             {
-                // 数秒間結果を表示する
-                // setTimeout(function(){
-                //     fetch("/calculate_score_red", {
-                //         method: "POST",
-                //         body : JSON.stringify({
-                //             cnt: cnt
-                //         })
-                //     }).then((response) => response.json())
-                //     .then((res) => {
-                //         const score = res.score
-                //         const total = res.total
-                //         document.getElementById("r_pt").innerHTML = total
-                //     })
-                // }, 5000)
                 change_mode(btn_r, list_r)
                 fetch("/calculate_score_red", {
                     method: "POST",
                     body : JSON.stringify({
-                        cnt: cnt
+                       cnt: cnt
                     })
                 }).then((response) => response.json())
                 .then((res) => {
@@ -96,6 +82,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     const total = res.total
                     document.getElementById("r_pt").innerHTML = total
                 })
+
+                document.getElementById("r_result").innerHTML = `結果 :  ${cnt} 回`;
+                document.getElementById("r_result").classList.remove("hide");
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                document.getElementById("r_result").classList.add("hide");
             }
             else
             {

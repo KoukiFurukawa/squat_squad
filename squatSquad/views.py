@@ -32,7 +32,7 @@ def increment_shared_variable(amount=1):
     with redis_lock(lock_key):
         value = cache.get(cache_key, 0)
         value += amount
-        cache.set(cache_key, value)
+        cache.set(cache_key, value, timeout=None)
         return value
 
 
@@ -41,7 +41,6 @@ def index(request):
     # print(increment_shared_variable(3))
     return render(request, "squatSquad/index.html")
 
-
 def total(request):
     if request.method == "GET":
         return render(request, "squatSquad/total.html")
@@ -49,8 +48,14 @@ def total(request):
 # squat --------------------------------------------------------------
 @csrf_exempt
 def squat(request):
-   if request.method == "GET":
-      return render(request, "squatSquad/index.html")
+    if request.method == "GET":
+        return render(request, "squatSquad/index.html")
+
+# result --------------------------------------------------------------
+@csrf_exempt
+def result(request):
+    if request.method == "GET":
+        return render(request, "squatSquad/index.html")
 
 # sample --------------------------------------------------------------
 @csrf_exempt
@@ -64,56 +69,91 @@ def isExercising(request):
         value = cache.get(cache_key, 0)
         return JsonResponse({"left_time":value})
 
+@csrf_exempt
 def cheering_red(request):
-    if request.method == "GET":
-        amount = 1
+    if request.method == "POST":
+        req_body = json.loads(request.body.decode('utf-8'))
+        amount = int(req_body["cnt"])
         cache_key = "count_cheer_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
             value = cache.get(cache_key, 0)
             value += amount
-            cache.set(cache_key, value)
-            return JsonResponse({cache_key:value})
-        
+            cache.set(cache_key, value, timeout=None)
+            print("応援回数(赤) : ", value)
+            return JsonResponse({})
+
+@csrf_exempt
 def cheering_white(request):
-    if request.method == "GET":
-        amount = 1
+    if request.method == "POST":
+        req_body = json.loads(request.body.decode('utf-8'))
+        amount = int(req_body["cnt"])
+        print(amount)
         cache_key = "count_cheer_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
             value = cache.get(cache_key, 0)
             value += amount
-            cache.set(cache_key, value)
-            return JsonResponse({cache_key:value})
+            cache.set(cache_key, value, timeout=None)
+            print("応援回数(白) : ", value)
+            return JsonResponse({})
         
+@csrf_exempt
 def calculate_score_red(request):
-    if request.method == "GET":
+    if request.method == "POST":
+        req_body = json.loads(request.body.decode('utf-8'))
+        squat = int(req_body["cnt"])
         cache_key = "total_score_red"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
-            total_score = cache.get("cache_key", 0)
-            squat = cache.get("count_squat_red", 0)
+            total_score = cache.get(cache_key, 0)
             cheer = cache.get("count_cheer_red", 0)
-            score = squat * (cheer // 100)
+            score = squat * (cheer // 100 + 1)
             total_score += score
-            cache.set(cache_key, total_score)
-            return JsonResponse({cache_key:score})
+            print("スコア",score, "トータル",total_score, "応援", cheer)
+            
+            cache.set(cache_key, total_score, timeout=None)
+            cache.set("count_cheer_red", 0, timeout=None)
+            return JsonResponse({"score":score, "total": total_score})
 
+@csrf_exempt
 def calculate_score_white(request):
-    if request.method == "GET":
+    if request.method == "POST":
+        req_body = json.loads(request.body.decode('utf-8'))
+        squat = int(req_body["cnt"])
         cache_key = "total_score_white"
         lock_key = cache_key + "_lock"
         with redis_lock(lock_key):
-            total_score = cache.get("cache_key", 0)
-            squat = cache.get("count_squat_white", 0)
+            total_score = cache.get(cache_key, 0)
             cheer = cache.get("count_cheer_white", 0)
-            score = squat * (cheer // 100)
+            score = squat * (cheer // 100 + 1)
             total_score += score
-            cache.set(cache_key, total_score)
-            return JsonResponse({cache_key:score})
+            print(score, total_score)
+            cache.set(cache_key, total_score, timeout=None)
+            cache.set("count_cheer_white", 0, timeout=None)
+            return JsonResponse({"score":score, "total": total_score})
+
+@csrf_exempt
+def getTotalScore(request):
+    if request.method == "POST":
+        data = {}
+        cache_key = "total_score_red"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            data["red"] = cache.get(cache_key, 0)
         
+        cache_key = "total_score_white"
+        lock_key = cache_key + "_lock"
+        with redis_lock(lock_key):
+            data["blue"] = cache.get(cache_key, 0)
+            
+        return JsonResponse(data)
+    else:
+        print("No")
+        return HttpResponse("No")
 
 # チーム判定 ---------------------------------------------------------------------
+@csrf_exempt
 def divide_teams(request):
     if request.method == "GET":
         return HttpResponse("only post")
@@ -121,25 +161,27 @@ def divide_teams(request):
     elif request.method == "POST":
         req_body = json.loads(request.body.decode('utf-8'))
         name = req_body["name"]
-        score = req_body["score"]
+        score = int(req_body["score"])
         cache_key_red = "red_ability"
         cache_key_white = "white_ability"
         team = ""
         
         with redis_lock(cache_key_red + "_lock"):
-            red_ability = cache.get(cache_key_red)
-            white_ability = cache.get(cache_key_white)
-            if red_ability > white_ability:
+            red_ability = cache.get(cache_key_red, 0)
+            white_ability = cache.get(cache_key_white, 0)
+            if red_ability < white_ability:
                 red_ability += score
-                team = "red"
+                team = "赤"
             else:
                 white_ability += score
-                team = "white"
-            cache.set(cache_key_red, red_ability)
-            cache.set(cache_key_white,white_ability)
+                team = "青"
+            cache.set(cache_key_red, red_ability, timeout=None)
+            cache.set(cache_key_white,white_ability, timeout=None)
             
         with redis_lock("user_lock"):
             user_data = get_dict_from_redis("user")
+            if user_data is None:
+                user_data = {}
             user_data[name] = { "score" : 0, "team" : team }
             set_dict_in_redis("user", user_data)
             
@@ -148,7 +190,7 @@ def divide_teams(request):
         return HttpResponse("処理されていない例外です。")
         
 def set_dict_in_redis(key, dictionary):
-    cache.set(key, json.dumps(dictionary))
+    cache.set(key, json.dumps(dictionary), timeout=None)
 
 def get_dict_from_redis(key):
     value = cache.get(key)

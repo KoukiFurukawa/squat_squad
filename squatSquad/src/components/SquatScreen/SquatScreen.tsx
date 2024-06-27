@@ -1,26 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { IUserInfo } from '../../interfaces/interfaces';
 import { Pose, POSE_CONNECTIONS, Results, NormalizedLandmarkList } from '@mediapipe/pose';
 import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors } from '@mediapipe/drawing_utils';
-
-// 角度計算関数
-const calculateAngle = (
-    Ax: number, Ay: number, Az: number,
-    Bx: number, By: number, Bz: number,
-    Cx: number, Cy: number, Cz: number
-): number => {
-    const vA: [number, number, number] = [Ax - Bx, Ay - By, Az - Bz];
-    const vB: [number, number, number] = [Cx - Bx, Cy - By, Cz - Bz];
-
-    const sizeA: number = Math.sqrt(vA.reduce((sum, v) => sum + v ** 2, 0));
-    const sizeB: number = Math.sqrt(vB.reduce((sum, v) => sum + v ** 2, 0));
-
-    const inner: number = vA.reduce((sum, v, i) => sum + v * vB[i], 0);
-    const cosTheta: number = inner / (sizeA * sizeB);
-    const theta: number = Math.acos(cosTheta) * (180 / Math.PI);
-
-    return Math.round(theta);
-};
+import calculateAngle from './CalculateAngle';
+import Up from "./squat_image/Up.png";
+import Down from "./squat_image/Down.png";
+import Start from './squat_image/Start.png';
+import Finished from './squat_image/Finished.png';
+import { Link } from 'react-router-dom'
 
 // スクワットをカウントするコンポーネント
 const Squat: React.FC = () => {
@@ -28,8 +17,111 @@ const Squat: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const angles = useRef<number[]>([]);
     const startTime = useRef<number | null>(null);
-    const squatCount = useRef<number>(0);
     const isSquatting = useRef<boolean>(false);
+    const [squatCount, setSquatCount] = useState<number>(0);
+    const [isUp, setIsUp] = useState<boolean>(false);
+    const [countdown, setCountdown] = useState<number>(5);
+    const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
+    const [exerciseCountdown, setExerciseCountdown] = useState<number>(30);
+    const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
+    const [showStartImage, setShowStartImage] = useState<boolean>(false);
+    const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);
+    const [ws, setWs] = useState<any>(null);
+    const [result, setResult] = useState<number>(0);
+    const [showResult, setshowResult] = useState<boolean>(false);
+
+    const location = useLocation();
+    const [selectId, setSelectId] = useState<IUserInfo>(location.state)
+
+    // 計測開始前のカウントダウンロジック
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev === 1) {
+                    setCountdownFinished(true);
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    // カウントダウン終了時のStart.pngの表示ロジック
+    useEffect(() => {
+        // socket通信を行う
+        if (countdown === 0) {
+            const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+            const name = location.state.name;
+            if (ws) {
+                ws.send(JSON.stringify({
+                    message: {
+                        "id": id,
+                        "cnt": squatCount,
+                        "name": name,
+                        "state": "start"
+                    }
+                }));
+            } else {
+                console.log("通信失敗")
+            }
+        }
+        if (countdown === 0) {
+            setShowStartImage(true);
+            const startTimer = setTimeout(() => {
+                setShowStartImage(false);
+            }, 1000); // 1秒後にStart.pngを非表示にする
+            return () => clearTimeout(startTimer);
+        }
+    }, [countdown]);
+
+    // スクワット計測開始後の30秒間のカウントダウンロジック
+    useEffect(() => {
+        if (countdownFinished) {
+            const exerciseTimer = setInterval(() => {
+                setExerciseCountdown((prev) => {
+                    if (prev === 1) {
+                        setExerciseFinished(true);
+                        clearInterval(exerciseTimer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(exerciseTimer);
+        }
+    }, [countdownFinished]);
+
+    // カウントダウン終了時の処理
+    useEffect(() => {
+        if (ws && exerciseFinished) {
+            const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+            const name = location.state.name;
+            if (ws) {
+                ws.send(JSON.stringify({
+                    message: {
+                        "id": id,
+                        "cnt": squatCount,
+                        "name": name,
+                        "state": "end"
+                    }
+                }));
+            } else {
+                console.log("通信失敗")
+            }
+        }
+        if (exerciseFinished) {
+            setShowFinishedImage(true);
+            const finishTimer = setTimeout(() => {
+                setShowFinishedImage(false);
+                setResult(squatCount);
+                setshowResult(true);
+            }, 5000); // 5秒後にFinished.pngを非表示にする
+            return () => clearTimeout(finishTimer);
+        }
+    }, [exerciseFinished]);
 
     // 姿勢推定前の初期化＆初期設定
     useEffect(() => {
@@ -59,15 +151,17 @@ const Squat: React.FC = () => {
             });
             camera.start();
         }
-    }, []);
+    }, [countdownFinished]);
 
     // MediapipeのPoseモジュールから結果を取得
-    function onResults(results: Results) {
-        if (canvasRef.current) {
+    const onResults = (results: Results) => {
+        if (canvasRef.current && !exerciseFinished) {
             const canvasCtx = canvasRef.current.getContext('2d');
             if (canvasCtx) {
                 canvasCtx.save();
                 canvasCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                canvasCtx.scale(-1, 1);
+                canvasCtx.translate(-canvasRef.current.width, 0);
                 canvasCtx.drawImage(
                     results.image,
                     0,
@@ -75,21 +169,84 @@ const Squat: React.FC = () => {
                     canvasRef.current.width,
                     canvasRef.current.height
                 );
-                if (results.poseLandmarks) {
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-                        color: '#FFA500',
-                        lineWidth: 2,
-                    });
-                    drawCustomLandmarks(canvasCtx, results.poseLandmarks);
-                    logLandmarkPositions(results.poseLandmarks, canvasCtx);
+
+                if (countdownFinished && !exerciseFinished) {
+                    canvasCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    if (isSquatting.current) {
+                        setIsUp(true);
+                    } else {
+                        setIsUp(false);
+                    }
+
+                    if (results.poseLandmarks) {
+                        drawConnectors(canvasCtx, flipLandmarks(results.poseLandmarks), POSE_CONNECTIONS, {
+                            color: '#FFA500',
+                            lineWidth: 2,
+                        });
+                        drawCustomLandmarks(canvasCtx, flipLandmarks(results.poseLandmarks));
+                        logLandmarkPositions(flipLandmarks(results.poseLandmarks), canvasCtx);
+                    }
                 }
                 canvasCtx.restore();
             }
         }
-    }
+    };
+
+    // ソケット通信の初期設定
+    useEffect(() => {
+        const loc = window.location;
+        const wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsUrl = wsStart + loc.host + '/ws/consumer';
+        const websocket = new WebSocket(wsUrl);
+
+        websocket.onopen = () => {
+            console.log('WebSocket is open now.');
+        };
+
+        websocket.onclose = () => {
+            console.log('WebSocket is closed now.');
+        };
+
+        websocket.onerror = (event) => {
+            console.error('WebSocket error:', event);
+        };
+
+        setWs(websocket);
+
+        return () => {
+            websocket.close();
+        };
+    }, []);
+
+    // カウント時に値を送信
+    useEffect(() => {
+        const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
+        const name = location.state.name;
+        if (ws) {
+            ws.send(JSON.stringify({
+                message: {
+                    "id": id,
+                    "cnt": squatCount,
+                    "name": name,
+                    "state": "counting"
+                }
+            }));
+        } else {
+            console.log("通信失敗")
+        }
+    }, [squatCount])
+
+    // ポーズのランドマークを水平反転させる関数
+    const flipLandmarks = (landmarks: NormalizedLandmarkList) => {
+        if (!canvasRef.current) return landmarks;
+        return landmarks.map(landmark => ({
+            ...landmark,
+            x: 1 - landmark.x
+        }));
+    };
 
     // ポーズのランドマークの色指定
-    function drawCustomLandmarks(ctx: CanvasRenderingContext2D, landmarks: NormalizedLandmarkList) {
+    const drawCustomLandmarks = (ctx: CanvasRenderingContext2D, landmarks: NormalizedLandmarkList) => {
         if (!canvasRef.current || !landmarks) return;
         for (let i = 0; i < landmarks.length; i++) {
             const x = landmarks[i].x * canvasRef.current.width;
@@ -105,13 +262,13 @@ const Squat: React.FC = () => {
             ctx.fillStyle = '#FFA500';
             ctx.fill();
         }
-    }
+    };
 
-    // 両肩、両腰、両膝の信頼度の平均を計算し、信頼度が高い方のランドマークの座標を取得しログに出力
-    function logLandmarkPositions(landmarks: NormalizedLandmarkList, ctx: CanvasRenderingContext2D) {
+    // 両肩・両腰・両膝の信頼度の平均を計算して信頼度が高い方のランドマークの座標を取得＆表示
+    const logLandmarkPositions = (landmarks: NormalizedLandmarkList, ctx: CanvasRenderingContext2D) => {
         if (!landmarks) return;
 
-        function calculateAverageConfidence(indices: number[]) {
+        const calculateAverageConfidence = (indices: number[]) => {
             let validCount = 0;
             const totalConfidence = indices.reduce((sum, index) => {
                 const landmark = landmarks[index];
@@ -122,7 +279,7 @@ const Squat: React.FC = () => {
                 return sum;
             }, 0);
             return validCount > 0 ? totalConfidence / validCount : 0;
-        }
+        };
 
         const leftIndices = [11, 23, 25];  // 左肩、左腰、左膝のインデックス
         const rightIndices = [12, 24, 26]; // 右肩、右腰、右膝のインデックス
@@ -144,9 +301,7 @@ const Squat: React.FC = () => {
                 hip.x, hip.y, hip.z,
                 knee.x, knee.y, knee.z
             );
-            console.log(`Hip Angle: ${angle} degrees`);
 
-            // 角度を配列に追加
             angles.current.push(angle);
 
             const currentTime = Date.now();
@@ -154,40 +309,83 @@ const Squat: React.FC = () => {
                 startTime.current = currentTime;
             }
 
-            // 0.5秒経過したら平均を計算して出力
-            if (currentTime - startTime.current >= 500) {
+            // 0.3秒経過したら平均を算出＆判定
+            if (currentTime - startTime.current >= 300) {
                 const averageAngle = Math.round(angles.current.reduce((sum, angle) => sum + angle, 0) / angles.current.length);
-                console.log(`Average Hip Angle (last 0.5s): ${averageAngle} degrees`);
 
-                // スクワットの判定と回数カウント
-                if (averageAngle < 70 && !isSquatting.current) {
+                // スクワットの判定＆回数カウント
+                if (averageAngle < 100 && !isSquatting.current) {
                     isSquatting.current = true;
-                } else if (averageAngle > 160 && isSquatting.current) {
+                } else if (averageAngle > 150 && isSquatting.current) {
                     isSquatting.current = false;
-                    squatCount.current += 1;
+                    setSquatCount(prevCount => prevCount + 1);
                 }
 
-                // 回数をキャンバスに描画
-                drawSquatCount(ctx, squatCount.current);
-
-                // 配列をクリアし、開始時間をリセット
+                // 配列をクリア＆開始時間をリセット
                 angles.current = [];
                 startTime.current = currentTime;
             }
         }
     }
 
-    // スクワット回数をキャンバスに描画
-    function drawSquatCount(ctx: CanvasRenderingContext2D, count: number) {
-        ctx.font = '48px sans-serif';
-        ctx.fillStyle = '#000000';
-        ctx.fillText(`Squat Count: ${count}`, 10, 50);
-    }
-
     return (
         <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
             <video ref={videoRef} style={{ display: 'none' }}></video>
             <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', height: '100%' }}></canvas>
+            {!countdownFinished && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '900px', color: '#FFFFFF' }}>
+                    {countdown}
+                </div>
+            )}
+            {showStartImage && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    <img src={Start} alt="Start" style={{ width: '100%', height: 'auto' }} />
+                </div>
+            )}
+            {!showStartImage && countdownFinished && !exerciseFinished && (
+                <div style={{ position: 'absolute', top: '15%', left: '85%', transform: 'translate(-50%, -50%)', fontSize: '350px', color: '#FFFFFF' }}>
+                    {`${exerciseCountdown}s`}
+                </div>
+            )}
+            {!showStartImage && countdownFinished && !exerciseFinished && (
+                <>
+                    <div style={{ position: 'absolute', top: '53%', left: '8%', fontSize: '130px', color: '#FFFFFF' }}>
+                        回数
+                    </div>
+                    <div style={{ position: 'absolute', top: '58%', left: squatCount < 10 ? '10%' : squatCount < 100 ? '5%' : '0%', fontSize: '350px', color: '#FFFFFF' }}>
+                        {squatCount}
+                    </div>
+                </>
+            )}
+            {!showStartImage && countdownFinished && !exerciseFinished && (
+                <div style={{ position: 'absolute', top: isUp ? '55%' : '72%', left: isUp ? '70%' : '60%' }}>
+                    {isUp ?
+                        <img src={Up} alt="Up" style={{ width: '85%', height: 'auto' }} /> :
+                        <img src={Down} alt="Down" style={{ width: '100%', height: 'auto' }} />}
+                </div>
+            )}
+            {showFinishedImage && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    <img src={Finished} alt="Finished" style={{ width: '100%', height: 'auto' }} />
+                </div>
+            )}
+            {showResult && (
+                <div style={{
+                    position: 'fixed', width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000,
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '50%', height: '50%',
+                        textAlign: 'center', display: 'flex', flexDirection: "column", justifyContent: 'center'
+                    }}>
+                        <h2 style={{ fontSize: '40px', margin: '10px' }}>結果</h2>
+                        <p style={{ fontSize: '40px' }}>スクワット回数 :  {result}回</p>
+                        <Link to="/readqr" style={{ textDecoration: 'none' }} onClick={() => setshowResult(false)}>
+                            <button style={{ fontSize: '40px', marginTop: '40px' }}>閉じる</button>
+                        </Link>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

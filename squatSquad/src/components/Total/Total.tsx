@@ -11,6 +11,11 @@ function Total() {
     const [isRedVisible, setIsRedVisible] = useState<boolean>(false)
     const [isBlueVisible, setIsBlueVisible] = useState<boolean>(false);
     const [ws, setWs] = useState<any>(null)
+    const [r_result, set_Rresult] = useState<number>(0)
+    const [w_result, set_Wresult] = useState<number>(0)
+    const [isR_result, setIsR_result] = useState<boolean>(false)
+    const [isW_result, setIsW_result] = useState<boolean>(false)
+
 
     const toggleRedVisibility = (val: boolean) => {
         setIsRedVisible(val);
@@ -96,20 +101,25 @@ function Total() {
             {
                 if (id == "r_cnt")
                 {
-                    setTimeout(function(){
-                        fetch("/calculate_score_red", {
-                            method: "POST",
-                            body : JSON.stringify({
-                                cnt: cnt
-                            })
-                        }).then((response) => response.json())
-                        .then((res) => {
-                            const score = res.score
-                            const total = res.total
-                            setRedScore(total)
+                    fetch("/calculate_score_red", {
+                        method: "POST",
+                        body : JSON.stringify({
+                            cnt: cnt
                         })
-                    }, 5000)
+                    }).then((response) => response.json())
+                    .then((res) => {
+                        const score = res.score
+                        const total = res.total
+                        setRedScore(total)
+                    })
+
                     toggleRedVisibility(false)
+
+                    set_Rresult(cnt);
+                    setIsR_result(true);
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    setIsR_result(false);
+
                     // fetch("/calculate_score_red", {
                     //     method: "POST",
                     //     body : JSON.stringify({
@@ -137,6 +147,11 @@ function Total() {
                     })
 
                     toggleBlueVisibility(false)
+
+                    set_Wresult(cnt);
+                    setIsW_result(true);
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    setIsW_result(false);
                 }
             }
         }
@@ -164,6 +179,9 @@ function Total() {
                         <p>回</p>
                     </div>
                 </div>
+                <div id="r_result" className={isR_result ? "result" : "result hide"}>
+                    <p>結果 : {r_result}回</p> 
+                </div>
                 {/* <button id="ch">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}
             </div>
@@ -180,6 +198,9 @@ function Total() {
                         <p className="squat_count" id="w_cnt">{b_cnt}</p>
                         <p>回</p>
                     </div>
+                </div>
+                <div id="w_result" className={isW_result ? "result" : "result hide"}>
+                    <p>結果 : {w_result}回</p> 
                 </div>
                 {/* <button id="ch_w">計測</button>
                 <button id="inc_count" className="hide">スクワット</button> */}

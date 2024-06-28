@@ -61,8 +61,14 @@
     border: solid 15px rgb(33 81 255);
 }
 
+.team-text {
+    font-weight: 500;
+}
+
 .pt {
     display: flex;
+    font-size: 64px;
+    font-weight: 700;
 }
 .hide {
     display: none;

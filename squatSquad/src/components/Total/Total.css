@@ -21,6 +21,10 @@
     align-items: center;
 }
 
+/* .username {
+    text-align: center;
+} */
+
 .team {
     display: flex;
     flex-direction: column;
@@ -92,7 +96,7 @@
     justify-content: center;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 660px) {
     .containers {
         flex-direction: column;
         width: 80%;

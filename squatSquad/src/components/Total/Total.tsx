@@ -164,7 +164,7 @@ function Total() {
         <div className='wrapper'>
         <div className="containers">
             <div className="team r">
-                <div className='team_header'>
+                <div className={`team_header ${isRedVisible || isR_result ? 'hide' : ''}`}>
                     <p className='team-text'>赤チーム</p>
                     <div className="pt">
                         <p id="r_pt">{redScore}</p>
@@ -181,13 +181,13 @@ function Total() {
                 </div>
                 <div id="r_result" className={isR_result ? "result" : "hide"}>
                     <p>スクワット : {r_result}回</p>
-                    <p>応援回数　 : {r_cheer}回</p>
-                    <p>スコア　　 : {r_score}</p>
+                    <p>応援回数 : {r_cheer}</p>
+                    <p>スコア : {r_score}</p>
                 </div>
             </div>
         
             <div className="team w">
-                <div className='team_header'>
+                <div className={`team_header ${isBlueVisible || isW_result ? 'hide' : ''}`}>
                     <p className='team-text'>青チーム</p>
                     <div className="pt">
                         <p id="w_pt">{blueScore}</p>
@@ -203,8 +203,8 @@ function Total() {
                 </div>
                 <div id="w_result" className={isW_result ? "result" : "hide"}>
                     <p>スクワット : {w_result}回</p>
-                    <p>応援回数　 : {w_cheer}回</p>
-                    <p>スコア 　　: {w_score}</p>
+                    <p>応援回数 : {w_cheer}</p>
+                    <p>スコア : {w_score}</p>
                 </div>
             </div>
         </div>

@@ -113,6 +113,11 @@ const Home = () => {
                         </div>
                         <div>
                             <div>{`運動の得意不得意を入力して下さい${alert_exer}`}</div>
+                            <div className="explain_exer">
+                                <p>苦手</p>
+                                <p>普通</p>
+                                <p>得意</p>
+                            </div>
                             <div className="btnbox">
                                 <button id="1" onClick={(e) => changeExer(e.currentTarget.id)}>1</button>
                                 <button id="2" onClick={(e) => changeExer(e.currentTarget.id)}>2</button>

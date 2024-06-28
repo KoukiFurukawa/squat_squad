@@ -107,7 +107,7 @@ const CounterButton: React.FC = () => {
                 <span className={teamClass}>{teamName}チーム</span>です！
             </p>
             <button
-                className={`btn-square-shadow ${isPressed ? 'active' : ''}`}
+                className={`btn-square-shadow ${teamClass}_btn ${isPressed ? 'active' : ''}`}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onClick={handleClick}

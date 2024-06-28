@@ -8,11 +8,11 @@
 }
 
 .red-team {
-  color: red;
+  color: #ff2100;
 }
 
 .blue-team {
-  color: blue;
+  color: #2151ff;
 }
 
 .main-message {
@@ -34,7 +34,6 @@
   line-height: 200px;
   text-align: center;
   text-decoration: none;
-  background: #ff8400;
   color: #FFF;
   border-bottom: solid 8px #300f00;
   border-radius: 50%;
@@ -43,8 +42,24 @@
   transition: background 0.3s;
 }
 
-.btn-square-shadow.active {
-  background: #e07400;
+.red-team_btn {
+  background: #ff2100;
+}
+.red-team_btn:hover {
+  background: #ff2100;
+}
+.red-team_btn.active {
+  background: #cc1a00;
+}
+
+.blue-team_btn {
+  background: #2151ff;
+}
+.blue-team_btn:hover {
+  background: #2151ff;
+}
+.blue-team_btn.active {
+  background: #1a40cc;
 }
 
 .btn-square-shadow:active {

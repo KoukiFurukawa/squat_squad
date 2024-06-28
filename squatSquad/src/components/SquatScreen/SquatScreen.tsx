@@ -20,7 +20,7 @@ const Squat: React.FC = () => {
     const isSquatting = useRef<boolean>(false);
     const [squatCount, setSquatCount] = useState<number>(0);
     const [isUp, setIsUp] = useState<boolean>(false);
-    const [countdown, setCountdown] = useState<number>(5);
+    const [countdown, setCountdown] = useState<number>(10);
     const [countdownFinished, setCountdownFinished] = useState<boolean>(false);
     const [exerciseCountdown, setExerciseCountdown] = useState<number>(30);
     const [exerciseFinished, setExerciseFinished] = useState<boolean>(false);
@@ -28,7 +28,7 @@ const Squat: React.FC = () => {
     const [showFinishedImage, setShowFinishedImage] = useState<boolean>(false);
     const [ws, setWs] = useState<any>(null);
     const [result, setResult] = useState<number>(0);
-    const [showResult,setshowResult] = useState<boolean>(false);
+    const [showResult, setshowResult] = useState<boolean>(false);
 
     const location = useLocation();
     const [selectId, setSelectId] = useState<IUserInfo>(location.state)
@@ -52,19 +52,19 @@ const Squat: React.FC = () => {
     // カウントダウン終了時のStart.pngの表示ロジック
     useEffect(() => {
         // socket通信を行う
-        if (countdown === 0){
+        if (countdown === 0) {
             const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
             const name = location.state.name;
             if (ws) {
                 ws.send(JSON.stringify({
                     message: {
-                        "id" : id,
+                        "id": id,
                         "cnt": squatCount,
-                        "name" : name,
-                        "state" : "start"
+                        "name": name,
+                        "state": "start"
                     }
                 }));
-            }else{
+            } else {
                 console.log("通信失敗")
             }
         }
@@ -96,20 +96,19 @@ const Squat: React.FC = () => {
 
     // カウントダウン終了時の処理
     useEffect(() => {
-        if (ws && exerciseFinished)
-        {
+        if (ws && exerciseFinished) {
             const id = location.state.team === "赤" ? "r_cnt" : "w_cnt"
             const name = location.state.name;
             if (ws) {
                 ws.send(JSON.stringify({
                     message: {
-                        "id" : id,
+                        "id": id,
                         "cnt": squatCount,
-                        "name" : name,
-                        "state" : "end"
+                        "name": name,
+                        "state": "end"
                     }
                 }));
-            }else{
+            } else {
                 console.log("通信失敗")
             }
         }
@@ -226,16 +225,16 @@ const Squat: React.FC = () => {
         if (ws) {
             ws.send(JSON.stringify({
                 message: {
-                    "id" : id,
+                    "id": id,
                     "cnt": squatCount,
-                    "name" : name,
-                    "state" : "counting"
+                    "name": name,
+                    "state": "counting"
                 }
             }));
-        }else{
+        } else {
             console.log("通信失敗")
         }
-    },[squatCount])
+    }, [squatCount])
 
     // ポーズのランドマークを水平反転させる関数
     const flipLandmarks = (landmarks: NormalizedLandmarkList) => {
@@ -370,15 +369,19 @@ const Squat: React.FC = () => {
                     <img src={Finished} alt="Finished" style={{ width: '100%', height: 'auto' }} />
                 </div>
             )}
-            {showResult &&  (
-                <div style={{ position: 'fixed', width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, }}>
-                    <div style={{backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '50%',height: '50%', 
-                        textAlign: 'center', display: 'flex', flexDirection: "column", justifyContent: 'center'}}>
-                        <h2 style={{fontSize: '40px',margin: '10px'}}>結果</h2>
-                        <p style={{fontSize: '40px'}}>スクワット回数 :  {result}回</p>
+            {showResult && (
+                <div style={{
+                    position: 'fixed', width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000,
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '50%', height: '50%',
+                        textAlign: 'center', display: 'flex', flexDirection: "column", justifyContent: 'center'
+                    }}>
+                        <h2 style={{ fontSize: '40px', margin: '10px' }}>結果</h2>
+                        <p style={{ fontSize: '40px' }}>スクワット回数 :  {result}回</p>
                         <Link to="/readqr" style={{ textDecoration: 'none' }} onClick={() => setshowResult(false)}>
-                            <button style={{fontSize: '40px', marginTop: '40px'}}>閉じる</button>
+                            <button style={{ fontSize: '40px', marginTop: '40px' }}>閉じる</button>
                         </Link>
                     </div>
                 </div>

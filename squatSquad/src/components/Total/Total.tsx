@@ -2,23 +2,23 @@ import React, { useEffect, useState } from 'react'
 import "./Total.css";
 
 function Total() {
-    const [redScore, setRedScore] = useState<number>(0)
-    const [blueScore, setBlueScore] = useState<number>(0)
-    const [r_name, setRName] = useState<string>("")
-    const [b_name, setBName] = useState<string>("")
-    const [r_cnt, setRCnt] = useState<number>(0)
-    const [b_cnt, setBCnt] = useState<number>(0)
-    const [isRedVisible, setIsRedVisible] = useState<boolean>(false)
+    const [redScore, setRedScore] = useState<number>(0);
+    const [blueScore, setBlueScore] = useState<number>(0);
+    const [r_name, setRName] = useState<string>("");
+    const [b_name, setBName] = useState<string>("");
+    const [r_cnt, setRCnt] = useState<number>(0);
+    const [b_cnt, setBCnt] = useState<number>(0);
+    const [isRedVisible, setIsRedVisible] = useState<boolean>(false);
     const [isBlueVisible, setIsBlueVisible] = useState<boolean>(false);
-    const [ws, setWs] = useState<any>(null)
-    const [r_result, set_Rresult] = useState<number>(0)
-    const [w_result, set_Wresult] = useState<number>(0)
-    const [isR_result, setIsR_result] = useState<boolean>(false)
-    const [isW_result, setIsW_result] = useState<boolean>(false)
-    const [r_score, setR_score] = useState<number>(0)
-    const [w_score, setW_score] = useState<number>(0)
-
-
+    const [ws, setWs] = useState<any>(null);
+    const [r_result, set_Rresult] = useState<number>(0);
+    const [w_result, set_Wresult] = useState<number>(0);
+    const [isR_result, setIsR_result] = useState<boolean>(false);
+    const [isW_result, setIsW_result] = useState<boolean>(false);
+    const [r_score, setR_score] = useState<string>("計算中...");
+    const [w_score, setW_score] = useState<string>("計算中...");
+    const [r_cheer, setRCheer] = useState<string>("計算中...");
+    const [w_cheer, setWCheer] = useState<string>("計算中...");
 
     const toggleRedVisibility = (val: boolean) => {
         setIsRedVisible(val);
@@ -27,11 +27,6 @@ function Total() {
     const toggleBlueVisibility = (val: boolean) => {
         setIsBlueVisible(val);
     };
-
-    // const btn_r = document.getElementById("ch");
-    // const list_r = document.querySelector(".team.r .squat");
-    // const btn_w = document.getElementById("ch_w");
-    // const list_w = document.querySelector(".team.w .squat");
 
     useEffect(() => {
         fetch("/total_score", {
@@ -68,13 +63,10 @@ function Total() {
         websocket.onmessage = async (event) =>
         {
             const messageData = JSON.parse(event.data).message;
-            // console.log(messageData)
             const id = messageData.id;
             const name = messageData.name;
             const cnt = messageData.cnt;
             const state = messageData.state;
-
-            console.log(state)
 
             if (state == "start")
             {
@@ -104,6 +96,7 @@ function Total() {
             {
                 if (id == "r_cnt")
                 {
+                    await new Promise(resolve => setTimeout(resolve, 5000));
                     fetch("/calculate_score_red", {
                         method: "POST",
                         body : JSON.stringify({
@@ -113,32 +106,25 @@ function Total() {
                     .then((res) => {
                         const score = res.score
                         const total = res.total
+                        const cheer = res.cheer
                         setRedScore(total)
                         setR_score(score)
+                        setRCheer(cheer)
                     })
 
                     toggleRedVisibility(false)
 
                     set_Rresult(cnt);
                     setIsR_result(true);
-                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    await new Promise(resolve => setTimeout(resolve, 20000));
+                    setRCheer("計算中...")
+                    setR_score("計算中...")
                     setIsR_result(false);
                     setRCnt(0)
-
-                    // fetch("/calculate_score_red", {
-                    //     method: "POST",
-                    //     body : JSON.stringify({
-                    //         cnt: cnt
-                    //     })
-                    // }).then((response) => response.json())
-                    // .then((res) => {
-                    //     const score = res.score
-                    //     const total = res.total
-                    //     document.getElementById("r_pt").innerHTML = total
-                    // })
                 }
                 else
                 {
+                    await new Promise(resolve => setTimeout(resolve, 5000));
                     fetch("/calculate_score_white", {
                         method: "POST",
                         body : JSON.stringify({
@@ -148,15 +134,19 @@ function Total() {
                     .then((res) => {
                         const score = res.score
                         const total = res.total
+                        const cheer = res.cheer
                         setBlueScore(total)
                         setW_score(score)
+                        setWCheer(cheer)
                     })
 
                     toggleBlueVisibility(false)
 
                     set_Wresult(cnt);
                     setIsW_result(true);
-                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    await new Promise(resolve => setTimeout(resolve, 20000));
+                    setWCheer("計算中...");
+                    setW_score("計算中...")
                     setIsW_result(false);
                     setBCnt(0)
                 }
@@ -174,8 +164,8 @@ function Total() {
         <div className='wrapper'>
         <div className="containers">
             <div className="team r">
-                <div className='team_header'>
-                    <p>赤チーム</p>
+                <div className={`team_header ${isRedVisible || isR_result ? 'hide' : ''}`}>
+                    <p className='team-text'>赤チーム</p>
                     <div className="pt">
                         <p id="r_pt">{redScore}</p>
                     <p>pt</p>
@@ -190,16 +180,15 @@ function Total() {
                     </div>
                 </div>
                 <div id="r_result" className={isR_result ? "result" : "hide"}>
-                    <p>結果 : {r_result}回</p>
+                    <p>スクワット : {r_result}回</p>
+                    <p>応援回数 : {r_cheer}</p>
                     <p>スコア : {r_score}</p>
                 </div>
-                {/* <button id="ch">計測</button>
-                <button id="inc_count" className="hide">スクワット</button> */}
             </div>
         
             <div className="team w">
-                <div className='team_header'>
-                    <p>青チーム</p>
+                <div className={`team_header ${isBlueVisible || isW_result ? 'hide' : ''}`}>
+                    <p className='team-text'>青チーム</p>
                     <div className="pt">
                         <p id="w_pt">{blueScore}</p>
                     <p>pt</p>
@@ -213,15 +202,14 @@ function Total() {
                     </div>
                 </div>
                 <div id="w_result" className={isW_result ? "result" : "hide"}>
-                    <p>結果 : {w_result}回</p>
+                    <p>スクワット : {w_result}回</p>
+                    <p>応援回数 : {w_cheer}</p>
                     <p>スコア : {w_score}</p>
                 </div>
-                {/* <button id="ch_w">計測</button>
-                <button id="inc_count" className="hide">スクワット</button> */}
             </div>
         </div>
         </div>
     )
 }
 
-export default Total
+export default Total;

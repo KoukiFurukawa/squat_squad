@@ -113,12 +113,18 @@ const Home = () => {
                         </div>
                         <div>
                             <div>{`運動の得意不得意を入力して下さい${alert_exer}`}</div>
+                            <div className="explain_exer">
+                                <p>苦手</p>
+                                <p>普通</p>
+                                <p>得意</p>
+                            </div>
                             <div className="btnbox">
                                 <button id="1" onClick={(e) => changeExer(e.currentTarget.id)}>1</button>
                                 <button id="2" onClick={(e) => changeExer(e.currentTarget.id)}>2</button>
                                 <button id="3" onClick={(e) => changeExer(e.currentTarget.id)}>3</button>
                                 <button id="4" onClick={(e) => changeExer(e.currentTarget.id)}>4</button>
                                 <button id="5" onClick={(e) => changeExer(e.currentTarget.id)}>5</button>
+
                             </div>
                         </div>
                         <button type="button" onClick={() => { check_input() }}>OK</button>
@@ -148,8 +154,8 @@ const Home = () => {
                             <button className={getButtonClass()} onClick={transitionToButton}>応援する</button>
                         </div>
                     )}
-                    {/* <button onClick={() => { reset_data() }}>reset</button>
-                    <button onClick={() => { toggleLoginState() }}>reModal</button> */}
+                    <button onClick={() => { reset_data() }}>reset</button>
+                    <button onClick={() => { toggleLoginState() }}>reModal</button>
                 </div>
             )}
         </div>

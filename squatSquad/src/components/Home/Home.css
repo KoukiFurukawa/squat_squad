@@ -107,6 +107,8 @@ button {
 }
 
 .modal .form {
+    display: grid;
+    gap: 10px;
     background-color: white;
     padding: 30px;
     border-radius: 10px;
@@ -119,32 +121,41 @@ button {
     padding: 10px;
     margin: 10px 0;
     box-sizing: border-box;
-    border: 1px solid #ccc;
+    border: 1px solid #ff8400;
     border-radius: 5px;
     font-size: 1em;
 }
 
 .modal .form .btnbox {
     display: flex;
-    justify-content: space-around;
-    margin: 10px 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3px;
+    margin: 5px 0 15px;
 }
 
 .modal .form .btnbox button {
-    padding: 10px;
-    border: none;
+    padding: 10px 15px;
+    border: 1px solid #ffac54;
+    background-color: white;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #ff8400;
-    color: white;
     font-size: 1em;
     transition: background-color 0.3s ease;
 }
 
 .modal .form .btnbox button.selected {
-    background-color: #d26c00;
+    background-color: #ff8400;
+    color: white;
 }
 
 button:hover {
     background-color: #ffac54;
+}
+
+.explain_exer {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }

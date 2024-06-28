@@ -15,11 +15,15 @@
     flex-direction: row;
     gap: 2%;
     border: 1px;
-    width: 80%;
+    width: 90%;
     height: 80%;
     margin: auto;
     align-items: center;
 }
+
+/* .username {
+    text-align: center;
+} */
 
 .team {
     display: flex;
@@ -29,7 +33,7 @@
     flex-wrap: nowrap;
     width: 100%;
     height: 100%;
-    font-size: 300%;
+    font-size: 200%;
     /* flex: 1; */
     border-radius: 32px;
 }
@@ -92,6 +96,15 @@
     justify-content: center;
 }
 
+@media (max-width: 660px) {
+    .containers {
+        flex-direction: column;
+        width: 80%;
+    }
+    .team {
+        font-size: 150%;
+    }
+}
 /* button {
     position: absolute;
     bottom: 10px;
